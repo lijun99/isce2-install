@@ -47,6 +47,7 @@ The command shall pull a github version of isce2 to your `${HOME}/tools/src/isce
        X11LIBPATH=$CONDA_PREFIX/lib
        MOTIFINCPATH=$CONDA_PREFIX/include
        X11INCPATH=$CONDA_PREFIX/include
+       RPATH=$CONDA_PREFIX/lib
        ENABLE_CUDA = True
        CUDA_TOOLKIT_PATH=/usr/local/cuda
 
