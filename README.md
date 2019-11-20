@@ -117,7 +117,7 @@ Note that in order to `import isce` from python, you need to use the `isce` as t
 For `csh`, 
     
       # isce2.cshrc
-      setenv ISCE_HOME $HOME/isce
+      setenv ISCE_HOME $HOME/tools/isce
       setenv PATH $ISCE_HOME/bin\:$ISCE_HOME/applications\:$PATH
       setenv LD_LIBRARY_PATH $ISCE_HOME/lib\:$LD_LIBRARY_PATH
       # check whether PYTHONPATH exists 
