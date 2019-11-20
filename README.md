@@ -7,9 +7,9 @@ activate Anaconda3 by `conda init bash`.
 
 3. Install required packages
 
-       conda install gdal fftw scons
+       conda install gdal fftw scons hdf4 hdf5 netcdf4 scipy
        # for Linux
-       conda install -c conda-forge gcc_linux-64 gxx_linux-64 gfortran_linux-64 make openmpi hdf5
+       conda install -c conda-forge gcc_linux-64 gxx_linux-64 gfortran_linux-64 make openmpi opencv
       
        cd ${HOME}/anaconda3/bin
        ln -sf make gmake
@@ -18,6 +18,10 @@ activate Anaconda3 by `conda init bash`.
        ln -sf x86_64-conda_cos6-linux-gnu-g++ g++
        ln -sf x86_64-conda_cos6-linux-gnu-gfortran gfortran
        ln -sf x86_64-conda_cos6-linux-gnu-ld ld
+      
+       # for some conda-forge builds
+       cd ${HOME}/anaconda3/lib
+       ln -sf libzstd.so.1.3.7 libzstd.so.1
 
 If your system doesn't have a complete X11/openmotif development packages
 
