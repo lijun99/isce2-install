@@ -137,6 +137,8 @@ For `csh`,
 
 9. Common questions/problems
 
+# MacOSX with Anaconda3
+
  
 
 
