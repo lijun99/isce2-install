@@ -9,7 +9,7 @@ activate Anaconda3 by `conda init bash`.
 
        conda install gdal fftw scons hdf4 hdf5 netcdf4 scipy
        # for Linux
-       conda install -c conda-forge gcc_linux-64 gxx_linux-64 gfortran_linux-64 make openmpi opencv
+       conda install -c conda-forge gcc_linux-64 gxx_linux-64 gfortran_linux-64 make openmpi
       
        cd ${HOME}/anaconda3/bin
        ln -sf make gmake
@@ -26,6 +26,10 @@ activate Anaconda3 by `conda init bash`.
 If your system doesn't have a complete X11/openmotif development packages
 
        conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft xorg-libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+       
+       
+Some apps use `opencv`, but somehow the `conda` method is really slow. Try `pip install opencv-python` instead. 
+
     
 4. Download isce2 for github or prepare your own version 
      
