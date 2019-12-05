@@ -86,13 +86,13 @@ if they are not set. Check by, e.g.,  `echo $CONDA_PREFIX`.
 
 For `csh`, 
 
-       setenv CUDA_PREFIX ${HOME}/anaconda3
+       setenv CONDA_PREFIX ${HOME}/anaconda3
        setenv ISCE_HOME ${HOME}/tools/isce
        setenv SCONS_CONFIG_DIR ${HOME}/.isce
 
 and for `bash`, 
 
-       export CUDA_PREFIX=${HOME}/anaconda3
+       export CONDA_PREFIX=${HOME}/anaconda3
        export ISCE_HOME=${HOME}/tools/isce
        export SCONS_CONFIG_DIR=${HOME}/.isce
        
