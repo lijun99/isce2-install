@@ -1,0 +1,13 @@
+PRJ_SCONS_BUILD=$HOME/build/isce_build
+PRJ_SCONS_INSTALL=$HOME/tools/isce
+LIBPATH=/usr/lib /usr/lib/x86_64-linux-gnu
+CPPPATH=/usr/include /usr/include/gdal /usr/include/hdf5/serial /usr/include/python3.6 /usr/include/python3.6m
+FORTRAN=gfortran
+FORTRANPATH=/usr/include
+MOTIFLIBPATH=/usr/lib/x86_64-linux-gnu
+X11LIBPATH=/usr/lib/x86_64-linux-gnu
+MOTIFINCPATH=/usr/include
+X11INCPATH=/usr/include
+RPATH=/usr/lib/x86_64-linux-gnu
+ENABLE_CUDA = True
+CUDA_TOOLKIT_PATH=/usr/local/cuda
