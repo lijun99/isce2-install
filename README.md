@@ -25,7 +25,7 @@ activate Anaconda3 by `conda init bash`.
 
 If your system doesn't have a complete X11/openmotif development packages
 
-       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft xorg-libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
        
        
 Some apps use `opencv`, but somehow the `conda` method is really slow. Try `pip install opencv-python` instead. 
