@@ -1,3 +1,5 @@
+# Note: ISCE2 now comes with CMake support. The following guide applies to the old scon method.
+
 # Linux with Anaconda3
 
 1. Download Anaconda3 from https://www.anaconda.com/distribution/
