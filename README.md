@@ -1,6 +1,101 @@
-# Note: ISCE2 now comes with CMake support. The following guide applies to the old scon method.
+# ISCE2 installation guide
 
-# Linux with Anaconda3
+This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine.  
+
+
+## Linux with Anaconda3 : cmake
+
+1. Prepare a conda or conda virtual enviroment 
+
+       conda create -n isce2
+       conda activate isce2
+          
+The following steps will install isce2 to $CONDA_PREFIX. 
+
+       echo $CONDA_PREFIX 
+
+2. Install required packages
+
+       conda install python>=3.7 git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       
+To compile/install mdx, you will also need        
+       
+       conda install openmotif xorg-libxt xorg-libxft xorg-libxmu xorg-libxdmcp
+       
+For GPU support, you will need a CUDA compiler, which is usally located at `/usr/local/cuda` or can be loaded by `module load cuda`. For PyCuAmpcor, GDAL>=3.1 is recommended, in order to use memory map to speed up file I/O. 
+
+You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones come with conda, 
+
+       conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
+       
+Note that a given version of CUDA only supports certain versions of GNU compilers. For example, CUDA 10.1, please use GNU<=7.3. 
+
+
+      conda install gcc_linux-64=7.3.0 
+
+      
+3. Download the source package
+
+
+       mkdir -p $HOME/tools/src
+       cd $HOME/tools/src
+       git clone https://github.com/isce-framework/isce2.git
+
+4. Compile and install isce2
+
+       cd $HOME/tools/src/isce2
+       mkdir build  && cd build
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_FLAGS="-arch=sm_60" -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       make -j 16 # to use multiple threads
+       make install 
+ 
+* `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
+* `DPYTHON_MODULE_DIR` is the directory to install python scripts, defined in relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.8 instead of python3.9. One method to check the site-packages directory for your python version is to run a command
+ 
+      python3 -c 'import site; print(site.getsitepackages())'
+
+* `DCMAKE_CUDA_FLAGS` targets optimizing the GPU code for a specific GPU architecture, e.g.,  sm_60 for P100, sm_35 for K40, sm_70 for V100. 
+* `DCMAKE_PREFIX_PATH` is for search path(s) of dependencies, such as gdal, fftw. Since we installed all dependencies through conda, we use ${CONDA_PREFIX}.
+* `DCMAKE_BUILD_TYPE=(None, Debug, Release)`. Some isce2 modules (e.g. PyCuAmpcor) have debugging features which are turned on/off by the -DNDEBUG compilation flag. This flag is not included in Debug build type or not specified, i.e., debugging features are on. It is included in Release build type, and therefore debugging features are turned off. For end users, please use Release build type.
+* If cmake cannot locate the desired compilers correctly, you can enforce the choice of compilers by adding
+
+      -DCMAKE_C_COMPILER=/path/to/gcc -DCMAKE_CXX_COMPILER=/path/to/g++ -DCMAKE_Fortran_COMPILER=/path/to/gfortran
+            
+* If something is wrong in compilation and you would like to check the details 
+
+      make VERBOSE=1
+
+5. Check and Test
+
+You may check whether ISCE2 is properly installed by 
+
+      cd $CONDA_PREFIX/bin
+      ls -ltr 
+      # you should see mdx, and other python apps are installed 
+      cd ../lib/python3.x/site-packages
+      ls -ltr
+      # you should see isce2 and an additional link isce
+      
+You may try to run 
+
+      python3 -c 'import isce'
+      topsApp.py -h 
+      ... 
+      
+Next time, all you need to do to load isce2 is to 
+
+      codna activate # if you install to the base 
+      conda activate isce2 # if you install to an isce2 venv. 
+      
+    
+
+
+
+
+
+
+
+## Linux with Anaconda3 : scons
 
 1. Download Anaconda3 from https://www.anaconda.com/distribution/
 2. Install Anaconda3 to, e.g., ${HOME}/anaconda3, the directory will be set as `CONDA_PREFIX`. 
@@ -148,7 +243,9 @@ For `csh`,
 
 9. Common questions/problems
 
-# MacOSX with Anaconda3
+## MacOSX with Anaconda3 
+
+Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
  
 
