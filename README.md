@@ -7,16 +7,18 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
 
 1. Prepare a conda or conda virtual enviroment 
 
-       conda create -n isce2
+       conda create -n isce2 python=3.8
        conda activate isce2
-          
+
+(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
+
 The following steps will install isce2 to $CONDA_PREFIX. 
 
        echo $CONDA_PREFIX 
 
 2. Install required packages
 
-       conda install python>=3.7 git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
        
 To compile/install mdx, you will also need        
        
@@ -31,7 +33,7 @@ You will also need C/C++/Fortran compilers. You may use the system provided GNU 
 Note that a given version of CUDA only supports certain versions of GNU compilers. For example, CUDA 10.1, please use GNU<=7.3. 
 
 
-      conda install gcc_linux-64=7.3.0 
+      conda install gcc_linux-64=7.3.0 gxx_linux-64=7.3.0 gfortran_linux-64=7.3.0
 
       
 3. Download the source package
@@ -45,12 +47,12 @@ Note that a given version of CUDA only supports certain versions of GNU compiler
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_FLAGS="-arch=sm_60" -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.8/site-packages -DCMAKE_CUDA_FLAGS="-arch=sm_60" -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
        make -j 16 # to use multiple threads
        make install 
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
-* `DPYTHON_MODULE_DIR` is the directory to install python scripts, defined in relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.8 instead of python3.9. One method to check the site-packages directory for your python version is to run a command
+* `DPYTHON_MODULE_DIR` is the directory to install python scripts, defined in relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.8. One method to check the site-packages directory for your python version is to run a command
  
       python3 -c 'import site; print(site.getsitepackages())'
 
