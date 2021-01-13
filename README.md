@@ -249,9 +249,46 @@ For `csh`,
 
 Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
+Example with MacOSX 11.1 (Big Sur) and Xcode 12.3 (12C33).
+
+1. Prepare a conda or conda virtual enviroment 
+
+       conda create -n isce2 python=3.8
+       conda activate isce2
+
+(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
+
+The following steps will install isce2 to $CONDA_PREFIX. 
+
+       echo $CONDA_PREFIX 
+
+2. Install required packages
+
+       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       
+To compile/install mdx, you will also need        
+       
+       conda install openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+       
+3. Compilers 
+
+       sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+       which clang # show /usr/bin/clang
+       clang --version # Apple clang version 12.0.0 (clang-1200.0.32.28)
+      
+Install gfortran through brew
+
+       brew install gfortran
+       which gfortran # show /usr/local/bin/gfortran
+       gfortran --version # GNU Fortran (Homebrew GCC 10.2.0_2) 10.2.0
+       
+4. Compile and install isce2
+
+       cd $HOME/tools/src/isce2
+       mkdir build  && cd build
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.8/site-packages  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX}
+       make -j 16 # to use multiple threads
+       make install       
+
  
-
-
-
- 
-
+Change cmake options if neccesary. Enjoy!
