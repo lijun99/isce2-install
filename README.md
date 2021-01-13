@@ -22,7 +22,7 @@ The following steps will install isce2 to $CONDA_PREFIX.
        
 To compile/install mdx, you will also need        
        
-       conda install openmotif xorg-libxt xorg-libxft xorg-libxmu xorg-libxdmcp
+       conda install openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
        
 For GPU support, you will need a CUDA compiler, which is usally located at `/usr/local/cuda` or can be loaded by `module load cuda`. For PyCuAmpcor, GDAL>=3.1 is recommended, in order to use memory map to speed up file I/O. 
 
