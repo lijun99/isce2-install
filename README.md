@@ -293,6 +293,8 @@ Install gfortran through brew
        which gfortran # show /usr/local/bin/gfortran
        gfortran --version # GNU Fortran (Homebrew GCC 10.2.0_2) 10.2.0
        
+Or you may simply download the binary from [HPC MacOSX](http://hpc.sourceforge.net/): they have pre-compiled versions `gfortran-x.x-bin.tar.gz` for all MacOSX systems, including Apple Silicon.          
+       
 4. Compile and install isce2
 
        cd $HOME/tools/src/isce2
