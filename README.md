@@ -35,6 +35,7 @@ Note that a given version of CUDA only supports certain versions of GNU compiler
 
       conda install gcc_linux-64=7.3.0 gxx_linux-64=7.3.0 gfortran_linux-64=7.3.0
 
+**Note: for Kamb (with Redhat 7)**: use the system GNU GCC 4.8.5. Don't use the CONDA-installed GNU compilers. 
       
 3. Download the source package
 
@@ -89,13 +90,12 @@ Next time, all you need to do to load isce2 is to
       codna activate # if you install to the base 
       conda activate isce2 # if you install to an isce2 venv. 
       
-    
+By default, the CUDA modules run on GPU device 0 (currently only one GPU per task is supported). If there are multiple tasks or multiple users sharing the same device, the program will run slow or even crash. If you have multiple GPUs installed (run `nvidia-smi` to check), you may spread your tasks to different GPUs, by using `CUDA_VISIBLE_DEVICES=n` to select the device, where `n=0,1,...` up to the number of GPUs installed. For example, to use device 2,  
 
-
-
-
-
-
+      export CUDA_VISIABLE_DEVICES=2
+      topsApp.py ...
+      # or one line
+      CUDA_VISIBLE_DEVICES=2 topsApp.py ...
 
 ## Linux with Anaconda3 : scons
 
