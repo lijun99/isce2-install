@@ -249,6 +249,8 @@ For `csh`,
 
 Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
+**For Apple M1**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from [Miniforge](https://github.com/conda-forge/miniforge). 
+
 Example with MacOSX 11.1 (Big Sur) and Xcode 12.3 (12C33).
 
 1. Prepare a conda or conda virtual enviroment 
@@ -272,10 +274,19 @@ To compile/install mdx, you will also need
        
 3. Compilers 
 
-       sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+If you already have Xcode installed, 
+
+       sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
        which clang # show /usr/bin/clang
        clang --version # Apple clang version 12.0.0 (clang-1200.0.32.28)
+
+If not, you may install the full version of Xocde, or simply the Command Line Tools, 
+
+
+      sudo xcode-select --install
+      sudo xcode-select --switch /Library/Developer/CommandLineTools
       
+
 Install gfortran through brew
 
        brew install gfortran
