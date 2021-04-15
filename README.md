@@ -99,9 +99,14 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 ## Linux with Anaconda3 : scons
 
-1. Follow the instruction in cmake section above to install conda and if you prefer, set up a virtual env for isce2. 
+1. Install Anaconda or Minoconda. If you only run isce2 with venv, miniconda is recommended. 
 
-2. Follow the instruction in  
+2. If you prefer, prepare a conda virtual enviroment 
+
+       conda create -n isce2 python=3.8
+       conda activate isce2
+
+(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
 
 3. Install required packages
 
