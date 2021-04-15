@@ -18,11 +18,11 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
        
 To compile/install mdx, you will also need        
        
-       conda install openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
        
 For GPU support, you will need a CUDA compiler, which is usally located at `/usr/local/cuda` or can be loaded by `module load cuda`. For PyCuAmpcor, GDAL>=3.1 is recommended, in order to use memory map to speed up file I/O. 
 
@@ -99,35 +99,34 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 ## Linux with Anaconda3 : scons
 
-1. Download Anaconda3 from https://www.anaconda.com/distribution/
-2. Install Anaconda3 to, e.g., ${HOME}/anaconda3, the directory will be set as `CONDA_PREFIX`. 
+1. Follow the instruction in cmake section above to install conda and if you prefer, set up a virtual env for isce2. 
 
-activate Anaconda3 by `conda init bash`. 
+2. Follow the instruction in  
 
 3. Install required packages
 
-       conda install gdal fftw scons hdf4 hdf5 netcdf4 scipy
-       # for Linux
-       conda install -c conda-forge gcc_linux-64 gxx_linux-64 gfortran_linux-64 make openmpi
+       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       
+To compile/install mdx, you will also need        
+       
+       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+
+
+You will need to make a symbolic link for cython3,
       
-       cd ${HOME}/anaconda3/bin
-       ln -sf make gmake
+       cd $CONDA_PREFIX/bin
        ln -sf cython cython3
+       
+If you plan to use conda installed GNU compilers, 
+
        ln -sf x86_64-conda_cos6-linux-gnu-gcc gcc
        ln -sf x86_64-conda_cos6-linux-gnu-g++ g++
        ln -sf x86_64-conda_cos6-linux-gnu-gfortran gfortran
        ln -sf x86_64-conda_cos6-linux-gnu-ld ld
       
-       # for some conda-forge builds
-       cd ${HOME}/anaconda3/lib
+       # for some conda-forge builds (seems no longer an issue with python3.8)
+       cd $CONDA_PREFIX/lib
        ln -sf libzstd.so.1.3.7 libzstd.so.1
-
-If your system doesn't have a complete X11/openmotif development packages
-
-       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
-       
-       
-Some apps use `opencv`, but somehow the `conda` method is really slow. Try `pip install opencv-python` instead. 
 
     
 4. Download isce2 for github or prepare your own version 
@@ -145,7 +144,7 @@ The command shall pull a github version of isce2 to your `${HOME}/tools/src/isce
        PRJ_SCONS_BUILD=$HOME/build/isce_build
        PRJ_SCONS_INSTALL=$ISCE_HOME
        LIBPATH=$CONDA_PREFIX/lib
-       CPPPATH=$CONDA_PREFIX/include $CONDA_PREFIX/include/python3.7m/ 
+       CPPPATH=$CONDA_PREFIX/include $CONDA_PREFIX/include/python3.8/ $CONDA_PREFIX/lib/python3.8/site-packages/numpy/core/include $CONDA_PREFIX/include/opencv4
        FORTRAN=gfortran
        CC=gcc
        CXX=g++
@@ -156,7 +155,7 @@ The command shall pull a github version of isce2 to your `${HOME}/tools/src/isce
        X11INCPATH=$CONDA_PREFIX/include
        RPATH=$CONDA_PREFIX/lib
        ENABLE_CUDA = True
-       CUDA_TOOLKIT_PATH=/usr/local/cuda
+       CUDA_TOOLKIT_PATH=/usr/local/cuda  # use 'which nvcc' to verify 
 
  * `PRJ_SCONS_BUILD` is a directory to save temporary compiled files
  * `PRJ_SCONS_INSTALL` is where the isce2 will be installed. We use a `$ISCE_HOME` to be defined later 
@@ -170,12 +169,8 @@ and `X11INCPATH` to `/usr/include`.
 and `X11INCPATH` to `/usr/include`.
     * for conda installed packages, set them as `$CONDA_PREFIX/lib` and `$CONDA_PREFIX/include`.
  * `ENABLE_CUDA` = `True/False` whether to include some GPU/CUDA accelerated modules. If enabled, please also specify `CUDA_TOOLKIT_PATH` to where CUDA SDK is installed. Some manual configuration might be needed:
-    * CUDA SDK Versions up to 9 are recommended. If you use CUDA>=10, remove `SConscript('GPUampcor/SConscript')` from `isce2/components/zerodop/SConscript` file: this module uses a device cublas feature which is no longer supported. There are other GPU accelerated ampcor utilities available. 
-    * The CUDA compiler by default targets NVIDIA GPUs with compute capability 3.5 (K40, K80). If you prefer to compile CUDA code best suited to the GPU you have,  find `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, and change `-arch=sm_35` to an approiate setting, e.g., P100 `-arch=sm_60`, GTX1080 `-arch=sm_61`, V100 `-arch=sm_70`. 
-    * `libcuda.so` is in general installed to a system directory. You may need to add that directory to `CUDALIBPATH`, either to `SConfigISCE` or in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, change the relevant file to 
-       
-          env.Append(CUDALIBPATH=[cudaToolkitPath + '/lib', cudaToolkitPath + '/lib64'], '/lib64')
-         where `/lib64` is the directory to find `libcuda.so` file. (actually, this shared library is not needed to compile isce2 modules; we will remove it later). 
+    * CUDA SDK Versions 9 and above are recommended. 
+    * The CUDA compiler 9 & 10 by default targets NVIDIA GPUs with compute capability 3.5 (K40, K80). CUDA 11 uses sm_52 as default. If you prefer to compile CUDA code best suited to the GPU you have,  find `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, find the line `env['ENABLESHAREDNVCCFLAG'] = '-std=c++11 -shared`, add `-arch=sm_35` for K40/K80, `-arch=sm_60` for P100,  `-arch=sm_61` for GTX1080, `-arch=sm_70` for V100.  
  
 6. Some settings for environment variables before compile/install. You need to specify three environment variables 
 * `CONDA_PREFIX` where Anaconda3 is installed
@@ -185,19 +180,17 @@ if they are not set. Check by, e.g.,  `echo $CONDA_PREFIX`.
 
 For `csh`, 
 
-       setenv CONDA_PREFIX ${HOME}/anaconda3
        setenv ISCE_HOME ${HOME}/tools/isce
        setenv SCONS_CONFIG_DIR ${HOME}/.isce
 
 and for `bash`, 
 
-       export CONDA_PREFIX=${HOME}/anaconda3
        export ISCE_HOME=${HOME}/tools/isce
        export SCONS_CONFIG_DIR=${HOME}/.isce
        
 7. Compile/install isce2
 
-       cd ${HOME}/tools/src/isce
+       cd ${HOME}/tools/src/isce2
        scons install
        
 If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/tools/isce`. 
