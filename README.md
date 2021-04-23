@@ -122,7 +122,7 @@ You will need to make a symbolic link for cython3,
        cd $CONDA_PREFIX/bin
        ln -sf cython cython3
        
-If you plan to use conda installed GNU compilers, 
+If you plan to use conda installed GNU compilers (note that currently there are some compatibility issues of conda compiler with Redhat 7 systems, don't install gcc_linux-64, .... If you already made the following links, please delete them.)  
 
        ln -sf x86_64-conda_cos6-linux-gnu-gcc gcc
        ln -sf x86_64-conda_cos6-linux-gnu-g++ g++
