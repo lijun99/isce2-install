@@ -10,8 +10,6 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
        conda create -n isce2 python=3.8
        conda activate isce2
 
-(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
-
 The following steps will install isce2 to $CONDA_PREFIX. 
 
        echo $CONDA_PREFIX 
@@ -302,4 +300,4 @@ Or you may simply download the binary from [HPC MacOSX](http://hpc.sourceforge.n
        make install       
 
  
-Change cmake options if neccesary. Enjoy!
+Change cmake options if necessary. Enjoy!
