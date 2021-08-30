@@ -300,4 +300,4 @@ Change cmake options if necessary, e.g., `PYTHON_MODULE_DIR` to your installed p
 
 Note that after each major MacOSX update, please try to update (or reinstall) Command Line Tools and update Conda. 
 
-You may notice warnings such as  ``was built for newer macOS version (11.5) than being linked (11.0)``. It is in general safe to neglect these warnings. To support them, you use add ``-DCMAKE_OSX_DEPLOYMENT_TARGET=11.5`` to suppress them. 
+You may notice warnings such as  ``was built for newer macOS version (11.5) than being linked (11.0)``. It is in general safe to neglect these warnings. To suppress the warnings, you may add ``-DCMAKE_OSX_DEPLOYMENT_TARGET=11.5`` to cmake command line. 
