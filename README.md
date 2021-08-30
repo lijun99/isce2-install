@@ -104,8 +104,6 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
        conda create -n isce2 python=3.8
        conda activate isce2
 
-(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
-
 3. Install required packages
 
        conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
@@ -247,14 +245,12 @@ Please follow the instructions for Linux. You may need to install xcode or comma
 
 **For Apple M1**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from [Miniforge](https://github.com/conda-forge/miniforge). 
 
-Example with MacOSX 11.1 (Big Sur) and Xcode 12.3 (12C33).
+Example with MacOSX 11.5.2 (Big Sur) and Apple Clang 12.0.5.
 
 1. Prepare a conda or conda virtual enviroment 
 
-       conda create -n isce2 python=3.8
+       conda create -n isce2
        conda activate isce2
-
-(Note that due to an AttributeError: 'xml.etree.ElementTree.Element' object has no attribute 'getchildren', use python=3.7 or 3.8 for now). 
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
@@ -274,7 +270,7 @@ If you already have Xcode installed,
 
        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
        which clang # show /usr/bin/clang
-       clang --version # Apple clang version 12.0.0 (clang-1200.0.32.28)
+       clang --version # Apple clang version  12.0.5 (clang-1205.0.22.11)
 
 If not, you may install the full version of Xocde, or simply the Command Line Tools, 
 
@@ -287,7 +283,7 @@ Install gfortran through brew
 
        brew install gfortran
        which gfortran # show /usr/local/bin/gfortran
-       gfortran --version # GNU Fortran (Homebrew GCC 10.2.0_2) 10.2.0
+       gfortran --version # GNU Fortran (Homebrew GCC 11.2.0) 11.2.0
        
 Or you may simply download the binary from [HPC MacOSX](http://hpc.sourceforge.net/): they have pre-compiled versions `gfortran-x.x-bin.tar.gz` for all MacOSX systems, including Apple Silicon.          
        
@@ -295,9 +291,13 @@ Or you may simply download the binary from [HPC MacOSX](http://hpc.sourceforge.n
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.8/site-packages  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX}
-       make -j 16 # to use multiple threads
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX}
+       make -j # to use multiple threads
        make install       
 
  
-Change cmake options if necessary. Enjoy!
+Change cmake options if necessary, e.g., `PYTHON_MODULE_DIR` to your installed python version. Enjoy!
+
+Note that after each major MacOSX update, please try to update (or reinstall) Command Line Tools and update Conda. 
+
+You may notice warnings such as  ``was built for newer macOS version (11.5) than being linked (11.0)``. It is in general safe to neglect these warnings. To support them, you use add ``-DCMAKE_OSX_DEPLOYMENT_TARGET=11.5`` to suppress them. 
