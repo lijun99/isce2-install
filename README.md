@@ -16,7 +16,7 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv pybind11
        
 To compile/install mdx, you will also need        
        
