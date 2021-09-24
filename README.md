@@ -16,7 +16,7 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv pybind11
+       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv pybind11 shapely
        
 To compile/install mdx, you will also need        
        
@@ -95,7 +95,7 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
       # or one line
       CUDA_VISIBLE_DEVICES=2 topsApp.py ...
 
-## Linux with Anaconda3 : scons
+## Linux with Anaconda3 : scons (not working on Mac)
 
 1. Install Anaconda or Minoconda. If you only run isce2 with venv, miniconda is recommended. 
 
@@ -106,7 +106,7 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 3. Install required packages
 
-       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv pybind11 shapely
        
 To compile/install mdx, you will also need        
        
