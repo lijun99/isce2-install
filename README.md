@@ -243,7 +243,7 @@ For `csh`,
 
 Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
-**For Apple M1**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from [Miniforge](https://github.com/conda-forge/miniforge). 
+**For Apple M1**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from [Miniforge](https://github.com/conda-forge/miniforge). However, openmotif is not currently supported by native arm64. If you need mdx, please use x86_64 with Rosetta 2. 
 
 Example with MacOSX 11.5.2 (Big Sur) and Apple Clang 12.0.5.
 
