@@ -5,9 +5,9 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
 
 ## Linux with Anaconda3 : cmake
 
-1. Prepare a conda or conda virtual enviroment 
+1. Prepare a conda or conda virtual environment 
 
-       conda create -n isce2 python=3.8
+       conda create -n isce2 python=3.9
        conda activate isce2
 
 The following steps will install isce2 to $CONDA_PREFIX. 
@@ -21,22 +21,14 @@ The following steps will install isce2 to $CONDA_PREFIX.
 To compile/install mdx, you will also need        
        
        conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
-       
-For GPU support, you will need a CUDA compiler, which is usally located at `/usr/local/cuda` or can be loaded by `module load cuda`. For PyCuAmpcor, GDAL>=3.1 is recommended, in order to use memory map to speed up file I/O. 
 
-You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones come with conda, 
+You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones that come with conda, 
 
        conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
        
-Note that a given version of CUDA only supports certain versions of GNU compilers. For example, CUDA 10.1, please use GNU<=7.3. 
-
-
-      conda install gcc_linux-64=7.3.0 gxx_linux-64=7.3.0 gfortran_linux-64=7.3.0
-
-**Note: for Kamb (with Redhat 7)**: use the system GNU GCC 4.8.5. Don't use the CONDA-installed GNU compilers. 
+To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. CUDA 12 now supports most versions of GNU compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details. Therefore, the system-provided GNU compilers are preferred over the conda-installed ones. However, CUDA 12 has dropped support for devices < sm_50, such as K40. Please revert to CUDA 11 for these devices.  
       
 3. Download the source package
-
 
        mkdir -p $HOME/tools/src
        cd $HOME/tools/src
@@ -46,23 +38,22 @@ Note that a given version of CUDA only supports certain versions of GNU compiler
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.8/site-packages -DCMAKE_CUDA_FLAGS="-arch=sm_60" -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
-       make -j 16 # to use multiple threads
-       make install 
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_ARCHITECTURES=60 -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       make -j && make install
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
-* `DPYTHON_MODULE_DIR` is the directory to install python scripts, defined in relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.8. One method to check the site-packages directory for your python version is to run a command
+* `DPYTHON_MODULE_DIR` is the directory to install Python scripts, defined relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.9. One method to check the site-packages directory for your Python version is to run the command
  
       python3 -c 'import site; print(site.getsitepackages())'
 
-* `DCMAKE_CUDA_FLAGS` targets optimizing the GPU code for a specific GPU architecture, e.g.,  sm_60 for P100, sm_35 for K40, sm_70 for V100. 
+* `DCMAKE_CUDA_ARCHITECTURES` targets optimizing the GPU code for a specific GPU architecture, or in terms of the CUDA Compute Capability, e.g.,  60 for P100, 70 for V100, 80 for A100, 90 for H100, ... If the GPU is installed on the same machine you are compiling the code, you may simply use `DCMAKE_CUDA_ARCHITECTURES=native` to auto-config. If you plan to run the code on multiple architectures, use a list such as `DCMAKE_CUDA_ARCHITECTURES="60;70;86"`.   
 * `DCMAKE_PREFIX_PATH` is for search path(s) of dependencies, such as gdal, fftw. Since we installed all dependencies through conda, we use ${CONDA_PREFIX}.
 * `DCMAKE_BUILD_TYPE=(None, Debug, Release)`. Some isce2 modules (e.g. PyCuAmpcor) have debugging features which are turned on/off by the -DNDEBUG compilation flag. This flag is not included in Debug build type or not specified, i.e., debugging features are on. It is included in Release build type, and therefore debugging features are turned off. For end users, please use Release build type.
 * If cmake cannot locate the desired compilers correctly, you can enforce the choice of compilers by adding
 
       -DCMAKE_C_COMPILER=/path/to/gcc -DCMAKE_CXX_COMPILER=/path/to/g++ -DCMAKE_Fortran_COMPILER=/path/to/gfortran
             
-* If something is wrong in compilation and you would like to check the details 
+* If something is wrong in the compilation and you would like to check the details 
 
       make VERBOSE=1
 
@@ -88,14 +79,18 @@ Next time, all you need to do to load isce2 is to
       codna activate # if you install to the base 
       conda activate isce2 # if you install to an isce2 venv. 
       
-By default, the CUDA modules run on GPU device 0 (currently only one GPU per task is supported). If there are multiple tasks or multiple users sharing the same device, the program will run slow or even crash. If you have multiple GPUs installed (run `nvidia-smi` to check), you may spread your tasks to different GPUs, by using `CUDA_VISIBLE_DEVICES=n` to select the device, where `n=0,1,...` up to the number of GPUs installed. For example, to use device 2,  
+By default, the CUDA modules run on GPU device 0 (currently only one GPU per task is supported). If there are multiple tasks or multiple users sharing the same device, the program will run slow or even crash. If you have multiple GPUs installed (run `nvidia-smi` to check), you may spread your tasks to different GPUs, by using `CUDA_VISIBLE_DEVICES=n` to select the device, where `n=0,1,...` up to the number of GPUs installed. For example, to use device 2 (third GPU),  
 
       export CUDA_VISIABLE_DEVICES=2
       topsApp.py ...
       # or one line
       CUDA_VISIBLE_DEVICES=2 topsApp.py ...
 
-## Linux with Anaconda3 : scons (not working on Mac)
+## Linux with Anaconda3 : scons 
+
+**Note: SCons with Conda doesn't work on Mac. You may need to use macports.**
+
+**Note: If you plan to use Linux provided packages instead of Conda, please follow [Ubuntu 18.04 example](Ubuntu-18.04/SConfigISCE) to create a `SConfigISCE` config file.**
 
 1. Install Anaconda or Minoconda. If you only run isce2 with venv, miniconda is recommended. 
 
@@ -243,7 +238,7 @@ For `csh`,
 
 Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
-**For Apple M1**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from [Miniforge](https://github.com/conda-forge/miniforge). However, openmotif is not currently supported by native arm64. If you need mdx, please use x86_64 with Rosetta 2. 
+**For Apple Silicon (M1, M2, ...)**, you may use the regular (x86_64) Conda releases (continue to work with Rosetta 2). Or you may install the native arm64 version from Anaconda, or [Miniforge](https://github.com/conda-forge/miniforge). However, openmotif is not currently supported by native arm64. If you need mdx, please use the x86_64 release with Rosetta 2. 
 
 Example with MacOSX 11.5.2 (Big Sur) and Apple Clang 12.0.5.
 
