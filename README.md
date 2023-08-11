@@ -18,7 +18,7 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
        conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap pybind11 shapely
 
-The `opencv` package, required by `autoRIFT`, usually causes a long delay to the conda compatibility check. If you need to use `autoRIFT`, you may use pip to install opencv, such as `pip3 install opencv`.    
+The `opencv` package, required by `autoRIFT`, usually causes a long delay to the conda compatibility check. If you need to use `autoRIFT`, you may use pip to install opencv, such as `pip install opencv-python`.    
        
 To compile/install mdx, you will also need        
        
