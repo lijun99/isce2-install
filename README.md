@@ -1,7 +1,7 @@
 # ISCE2 installation guide
 
 This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine. 
-**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials.  
+**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials.  
 
 ## Contents 
 
@@ -16,12 +16,14 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
 
 1. Prepare a conda or conda virtual environment 
 
-       conda create -n isce2 python=3.9
+       conda create -n isce2
        conda activate isce2
+
+(Any python version 3.7 - 3.11 should work). 
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
-       echo $CONDA_PREFIX 
+       echo $CONDA_PREFIX
 
 2. Install required packages
 
@@ -34,11 +36,11 @@ To compile/install mdx, you will also need
        
        conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
 
-(**This step is only needed if you don't have access to a system installed compilers.**) You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones that come with conda, 
+Compilers. GNU compilers coming with the system are recommended; GCC 4.8 - 13 are supported. **ONly if you don't have access to a system installed compiler,**) you may use conda gnu compilers, 
 
        conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
        
-To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. CUDA 12 now supports most versions of GNU compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details. Therefore, the system-provided GNU compilers are preferred over the conda-installed ones. However, CUDA 12 has dropped support for devices < sm_50, such as K40. Please revert to CUDA 11 for these devices.  
+To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. Note that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.  Note also that CUDA 12 has dropped support for devices < sm_50, such as K40. Please use CUDA 11 for these old devices.  
       
 3. Download the source package
 
@@ -50,7 +52,8 @@ To use GPU-accelerated modules, you will need a CUDA compiler, which is usually 
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_ARCHITECTURES=native -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages  # use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_CUDA_ARCHITECTURES=native -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
        make -j && make install
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
