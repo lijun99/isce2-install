@@ -1,6 +1,13 @@
 # ISCE2 installation guide
 
-This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine.  
+This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine. 
+
+## Contents 
+
+   * [Linux with Anaconda3 : cmake (updated September 2023)](#linux-with-anaconda3--cmake)
+   * [Linux with Anaconda3 : scons (not updated for a while)](#linux-with-anaconda3--scons)
+   * [MacOSX with Anaconda3 (need updates for new MacOSX versions and Apple Silicon)](#macosx-with-anaconda3)
+   * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
 
 
 ## Linux with Anaconda3 : cmake
@@ -17,14 +24,15 @@ The following steps will install isce2 to $CONDA_PREFIX.
 2. Install required packages
 
        conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap pybind11 shapely
+       pip install opencv-python
 
-The `opencv` package, required by `autoRIFT`, usually causes a long delay to the conda compatibility check. If you need to use `autoRIFT`, you may use pip to install opencv, such as `pip install opencv-python`.    
+The `opencv` package, required by `autoRIFT` and some stack processing scripts, usually causes a long delay to the conda compatibility check. We recommend using pip method to install opencv.    
        
 To compile/install mdx, you will also need        
        
        conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
 
-You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones that come with conda, 
+(**This step is only needed if you don't have access to a system installed compilers.**) You will also need C/C++/Fortran compilers. You may use the system provided GNU compilers, or use the ones that come with conda, 
 
        conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
        
@@ -40,7 +48,7 @@ To use GPU-accelerated modules, you will need a CUDA compiler, which is usually 
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_ARCHITECTURES=60 -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages -DCMAKE_CUDA_ARCHITECTURES=native -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
        make -j && make install
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
@@ -48,7 +56,7 @@ To use GPU-accelerated modules, you will need a CUDA compiler, which is usually 
  
       python3 -c 'import site; print(site.getsitepackages())'
 
-* `DCMAKE_CUDA_ARCHITECTURES` targets optimizing the GPU code for a specific GPU architecture, or in terms of the CUDA Compute Capability, e.g.,  60 for P100, 70 for V100, 80 for A100, 90 for H100, ... If the GPU is installed on the same machine you are compiling the code, you may simply use `DCMAKE_CUDA_ARCHITECTURES=native` to auto-config. If you plan to run the code on multiple architectures, use a list such as `DCMAKE_CUDA_ARCHITECTURES="60;70;86"`.   
+* `DCMAKE_CUDA_ARCHITECTURES` targets optimizing the GPU code for a specific GPU architecture, or in terms of the CUDA Compute Capability, e.g.,  60 for P100, 70 for V100, 80 for A100, 90 for H100, ... If the GPU is installed on the same machine you are compiling the code, you may simply use `DCMAKE_CUDA_ARCHITECTURES=native` to auto-config. If you plan to run the code on multiple architectures, use a list such as `DCMAKE_CUDA_ARCHITECTURES="60;70;86"`, see [CMake Manual](https://cmake.org/cmake/help/latest/prop_tgt/CUDA_ARCHITECTURES.html) for more details.   
 * `DCMAKE_PREFIX_PATH` is for search path(s) of dependencies, such as gdal, fftw. Since we installed all dependencies through conda, we use ${CONDA_PREFIX}.
 * `DCMAKE_BUILD_TYPE=(None, Debug, Release)`. Some isce2 modules (e.g. PyCuAmpcor) have debugging features which are turned on/off by the -DNDEBUG compilation flag. This flag is not included in Debug build type or not specified, i.e., debugging features are on. It is included in Release build type, and therefore debugging features are turned off. For end users, please use Release build type.
 * If cmake cannot locate the desired compilers correctly, you can enforce the choice of compilers by adding
@@ -298,3 +306,87 @@ Change cmake options if necessary, e.g., `PYTHON_MODULE_DIR` to your installed p
 Note that after each major MacOSX update, please try to update (or reinstall) Command Line Tools and update Conda. 
 
 You may notice warnings such as  ``was built for newer macOS version (11.5) than being linked (11.0)``. It is in general safe to neglect these warnings. To suppress the warnings, you may add ``-DCMAKE_OSX_DEPLOYMENT_TARGET=11.5`` to cmake command line. 
+
+## MacOSX with Macports : Apple Silicon with mdx
+(Tested on macOS Ventura 13.5.1)
+
+1. Install Xcode (or Command Line Tools) and Macports
+
+Follow the [Macports Guide](https://www.macports.org/install.php) to download and install Macports. All the files, by default, will be installed to ``/opt/local``. The PATH will also be automatically added to your ``.zprofile`` or ``.profile``. If not, please run 
+
+        export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+
+It is a good idea to perform a update at first,
+
+        sudo port -v selfupdate
+
+To run mdx (the SLC viewing software), please also install [XQuartz](https://www.xquartz.org/). 
+
+2. Install required packages
+
+Compiler GCC/G++/Gfortran and OpenMP
+
+        sudo port install gcc12 libomp
+        sudo port select --set gcc mp-gcc12
+       
+Python and other libraries, (note: some additional python packages might be needed at runtime, you may always use ``sudo port install py311-xxxx`` to install them later.)
+
+        sudo port install cmake python311 py311-cython py311-numpy py311-scipy py311-pybind11 pybind11 hdf5 py311-gdal fftw-3 fftw-3-single py311-opencv4-devel
+        sudo port select --set python python311
+        sudo port select --set python3 python311
+        sudo port select --set cython cython311
+        sudo port select --set gdal py311-gdal
+        sudo ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` /opt/local/packages
+
+(Optional) To use mdx, install Openmotif 
+
+        sudo port install openmotif
+     
+3. Install ISCE2
+
+Download ISCE2 from github
+
+        git clone https://github.com/isce-framework/isce2.git
+
+Compile ISCE2 with cmake, 
+
+        cd isce2
+        mkdir build && cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/opt/local \
+          -DCMAKE_C_COMPILER=/opt/local/bin/gcc \
+          -DCMAKE_CXX_COMPILER=/opt/local/bin/g++ \
+          -DCMAKE_PREFIX_PATH="/opt/local" \
+          -DOpenMP_C_FLAGS="-fopenmp=lomp" \
+          -DOpenMP_CXX_FLAGS="-fopenmp=lomp" \
+          -DOpenMP_C_LIB_NAMES="libomp" \
+          -DOpenMP_CXX_LIB_NAMES="libomp" \
+          -DOpenMP_libomp_LIBRARY="/opt/local/lib/libomp/libomp.dylib" \
+          -DOpenMP_CXX_LIB_NAMES="libomp" \
+          -DPython_ROOT_DIR="/opt/local/Library/Frameworks/Python.framework/Versions/3.11/"  
+        make -j 
+        sudo make install
+
+(you may safely neglect the OpenCV warning.) Here, the installation path is set to ``/opt/local``, or MacPorts. You may choose a different directory, e.g., ``$HOME/apps/isce2``. But you will need to set ``PATH`` and ``PYTHONPATH`` manually by yourself. 
+
+4. Config and run isce2
+
+``mdx`` command is installed to ``/opt/local/bin`` while the rest is installed to ``/opt/local/packages/isce2`` (or the actual location ``/opt/local/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/isce2``. You may try the following to check whether ISCE2 has been properly installed, 
+
+        python3 -c "import isce"
+        # return "Using default ISCE Path: /opt/local/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/isce".
+
+To use some python apps, it is convenient to set up some environmental variables, 
+
+        #isce2.rc
+        export ISCE_HOME="/opt/local/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/isce"
+        export PATH="$ISCE_HOME/applications:$PATH"
+
+To use mdx, you will need XQuartz. Currently, there is a restriction you may only run X11 apps from an X-Terminal, not Apple Terminal. Open XQuartz, from ``Appplications->Terminal`` to open an X-terminal, 
+
+        mdx.py xxxxx.slc 
+        # show the slc picture (.xml description file needed)
+
+Problems & Questions, please post on the Issue. 
+
+
+
