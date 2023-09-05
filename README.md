@@ -25,10 +25,10 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap pybind11 shapely
-       pip install opencv-python
+       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
+       pip install opencv-python basemap
 
-The `opencv` package, required by `autoRIFT` and some stack processing scripts, usually causes a long delay to the conda compatibility check. We recommend using pip method to install opencv.    
+``basemap`` and ``opencv`` have complex dependencies, which cause long delay of the conda compatibility check. We recommend installing them with ``pip``.    
        
 To compile/install mdx, you will also need        
        
@@ -250,12 +250,15 @@ For `csh`,
 
 (Testd on macOS Ventura 13.5.1) 
 
-1. Install Conda/Compiler
+1. Install Xcode (or command line tools), Conda and gcc/g++/gfortran Compiler
 
 Install an osx-arm64 build of Anaconda3 or [Miniconda3](https://docs.conda.io/projects/miniconda/en/latest/index.html) (recommended). 
 
-Install Homebrew (the pkg installer is the easiest method, [Homebrew-4.1.9.pkg]
-(https://github.com/Homebrew/brew/releases/download/4.1.9/Homebrew-4.1.9.pkg)), and then install gfortran (current version GCC 13.2),
+Install Homebrew (the pkg installer is the easiest method, [Homebrew-4.1.9.pkg](https://github.com/Homebrew/brew/releases/download/4.1.9/Homebrew-4.1.9.pkg)). For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
+
+        export PATH="/opt/homebrew/bin:$PATH"
+
+and then install gfortran (current version GCC 13.2)
 
         brew install gfortran
 
@@ -265,15 +268,18 @@ If you need mdx (slc viewing software), install openmotif here (osx-arm64 versio
 
 Also install XQuartz. 
         
-
 2. Prepare a conda or conda virtual enviroment 
 
-       conda create -n isce2 python=3.9
+       conda create -n isce2
        conda activate isce2
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
        echo $CONDA_PREFIX 
+
+Make a link to make the installation path easier (``-DPYTHON_MODULE_DIR`` not longer need)
+
+       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages
 
 3. Install required packages
 
@@ -310,7 +316,7 @@ Example with MacOSX 11.5.2 (Big Sur) and Apple Clang 12.0.5.
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
-       echo $CONDA_PREFIX 
+       echo $CONDA_PREFIX        
 
 2. Install required packages
 
@@ -345,18 +351,47 @@ Or you may simply download the binary from [HPC MacOSX](http://hpc.sourceforge.n
        
 4. Compile and install isce2
 
-       cd $HOME/tools/src/isce2
-       mkdir build  && cd build
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX}
-       make -j # to use multiple threads
-       make install       
+Download ISCE2 from github
 
- 
-Change cmake options if necessary, e.g., `PYTHON_MODULE_DIR` to your installed python version. Enjoy!
+        git clone https://github.com/isce-framework/isce2.git
 
-Note that after each major MacOSX update, please try to update (or reinstall) Command Line Tools and update Conda. 
+Compile ISCE2 with cmake, 
 
-You may notice warnings such as  ``was built for newer macOS version (11.5) than being linked (11.0)``. It is in general safe to neglect these warnings. To suppress the warnings, you may add ``-DCMAKE_OSX_DEPLOYMENT_TARGET=11.5`` to cmake command line. 
+        cd isce2
+        mkdir build && cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+          -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
+          -DCMAKE_C_COMPILER="/opt/homebrew/bin/gcc-13" \
+          -DCMAKE_CXX_COMPILER="/opt/homebrew/bin/g++-13" 
+        make -j # to use multiple threads
+        make install       
+
+We use gcc from homebrew instead of Apple Clang because of some compatibility issue (some source codes need to be updated). 
+
+5. Config and run isce2
+
+If you follow the above steps, ISCE2 packages are installed to $CONDA_PREFIX/packages/isce2. You will only need to add the path to stack apps, 
+
+        export ISCE_HOME="$CONDA_PREFIX/packages/isce"
+        export PATH="$ISCE_HOME/applications:$PATH"
+
+If you have installed ISCE2 to a custom directory, e.g., ``$HOME/apps/isce2``, with ``-DCMAKE_INSTALL_PREFIX=$HOME/apps/isce2`` cmake option, you need to 
+
+        export ISCE_INSTALL_ROOT="$HOME/apps/isce2"
+        export ISCE_HOME="$ISCE_INSTALL_ROOT/packages/isce"
+        export PATH="$ISCE_HOME/applications:$ISCE_INSTALL_ROOT/bin:$PATH"
+        export PYTHONPATH="$ISCE_INSTALL_ROOT/packages:$PYTHONPATH"
+
+You may try the following to check whether ISCE2 has been properly installed, 
+
+        python3 -c "import isce"
+
+To use mdx, you will need [XQuartz](https://www.xquartz.org/). Currently, there is a restriction you may only run X11 apps from an X-Terminal, not Apple Terminal. Open XQuartz, from ``Appplications->Terminal`` to open an X-terminal, 
+
+        mdx.py xxxxx.slc 
+        # show the slc picture (.xml description file needed)
+
+Enjoy!
 
 ## MacOSX with Macports : Apple Silicon with mdx
 (Tested on macOS Ventura 13.5.1)
