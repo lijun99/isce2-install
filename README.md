@@ -1,6 +1,7 @@
 # ISCE2 installation guide
 
 This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine. 
+**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials.  
 
 ## Contents 
 
