@@ -8,7 +8,7 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
    * [Linux with Anaconda3 : cmake (updated September 2023)](#linux-with-anaconda3--cmake)
    * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
-   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2023)](#macosx-with-anaconda3-and-homebrew--apple-silicon)
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2023)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
 
 
