@@ -6,8 +6,9 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
 ## Contents 
 
    * [Linux with Anaconda3 : cmake (updated September 2023)](#linux-with-anaconda3--cmake)
-   * [Linux with Anaconda3 : scons (not updated for a while)](#linux-with-anaconda3--scons)
-   * [MacOSX with Anaconda3 (need updates for new MacOSX versions and Apple Silicon)](#macosx-with-anaconda3)
+   * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
+   * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2023)](#macosx-with-anaconda3-and-homebrew--apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
 
 
@@ -245,7 +246,56 @@ For `csh`,
 
 9. Common questions/problems
 
-## MacOSX with Anaconda3 
+## MacOSX with Anaconda3 and homebrew: Apple Silicon 
+
+(Testd on macOS Ventura 13.5.1) 
+
+1. Install Conda/Compiler
+
+Install an osx-arm64 build of Anaconda3 or [Miniconda3](https://docs.conda.io/projects/miniconda/en/latest/index.html) (recommended). 
+
+Install Homebrew (the pkg installer is the easiest method, [Homebrew-4.1.9.pkg]
+(https://github.com/Homebrew/brew/releases/download/4.1.9/Homebrew-4.1.9.pkg)), and then install gfortran (current version GCC 13.2),
+
+        brew install gfortran
+
+If you need mdx (slc viewing software), install openmotif here (osx-arm64 version currently not available from conda)
+
+        brew install openmotif
+
+Also install XQuartz. 
+        
+
+2. Prepare a conda or conda virtual enviroment 
+
+       conda create -n isce2 python=3.9
+       conda activate isce2
+
+The following steps will install isce2 to $CONDA_PREFIX. 
+
+       echo $CONDA_PREFIX 
+
+3. Install required packages
+
+       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
+       pip install basemap opencv-python
+       
+``basemap`` and ``opencv`` have complex dependencies, which cause long delay of the conda compatibility check. We recommend installing them with ``pip``. 
+                     
+4. Compile and install isce2
+
+       cd $HOME/tools/src/isce2
+       mkdir build  && cd build
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_MODULE_DIR=lib/python3.9/site-packages  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX}
+       make -j # to use multiple threads
+       make install       
+
+ 
+Change cmake options if necessary, e.g., `PYTHON_MODULE_DIR` to your installed python version. Enjoy!
+
+## MacOSX with Anaconda3 : Intel 
+
+**This is an old guide for Intel Macs (osx-64). It may also work for Apple Silicons with Rosetta 2, but may experience problems with complexities on clang/gcc compilers for new versions of macOS.**
 
 Please follow the instructions for Linux. You may need to install xcode or command-line-tools. GPU modules are not supported for MacOSX, unless you use an external GPU with NVIDIA cards. You will then need to install NVIDIA driver and CUDA.  
 
