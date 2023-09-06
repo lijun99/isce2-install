@@ -328,7 +328,7 @@ You may try the following to check whether ISCE2 has been properly installed,
 
         python3 -c "import isce"
 
-To use mdx, you will need [XQuartz](https://www.xquartz.org/). Currently, there is a restriction you may only run X11 apps from an X-Terminal, not Apple Terminal. Open XQuartz, from ``Appplications->Terminal`` to open an X-terminal, 
+To use mdx, you will need [XQuartz](https://www.xquartz.org/). 
 
         mdx.py xxxxx.slc 
         # show the slc picture (.xml description file needed)
@@ -479,10 +479,12 @@ To use some python apps, it is convenient to set up some environmental variables
         export ISCE_HOME="/opt/local/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/isce"
         export PATH="$ISCE_HOME/applications:$PATH"
 
-To use mdx, you will need XQuartz. Currently, there is a restriction you may only run X11 apps from an X-Terminal, not Apple Terminal. Open XQuartz, from ``Appplications->Terminal`` to open an X-terminal, 
+To use mdx, you will need XQuartz. 
 
         mdx.py xxxxx.slc 
         # show the slc picture (.xml description file needed)
+
+(If you have a "cannot open DISPLAY" error, check [here](https://github.com/XQuartz/XQuartz/issues/295#issuecomment-1326693810). )        
 
 Problems & Questions, please post on the Issue. 
 
