@@ -28,9 +28,9 @@ The following steps will install isce2 to $CONDA_PREFIX.
 2. Install required packages
 
        conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
-       pip install opencv-python basemap
+       pip install opencv-python
 
-``basemap`` and ``opencv`` have complex dependencies, which cause long delay of the conda compatibility check. We recommend installing them with ``pip``.    
+``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.    
        
 To compile/install mdx, you will also need        
        
@@ -116,7 +116,7 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 3. Install required packages
 
-       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv pybind11 shapely
+       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy opencv pybind11 shapely
        
 To compile/install mdx, you will also need        
        
@@ -287,9 +287,9 @@ Make a link to make the installation path easier (``-DPYTHON_MODULE_DIR`` not lo
 3. Install required packages
 
        conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
-       pip install basemap opencv-python
+       pip install opencv-python
        
-``basemap`` and ``opencv`` have complex dependencies, which cause long delay of the conda compatibility check. We recommend installing them with ``pip``. 
+``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.  
                      
 4. Compile and install isce2
 
@@ -356,7 +356,10 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy basemap opencv 
+       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11
+       pip install opencv
+
+``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.  
        
 To compile/install mdx, you will also need        
        
