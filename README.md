@@ -16,50 +16,61 @@ This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Li
 
 1. Prepare a conda or conda virtual environment 
 
-       conda create -n isce2
-       conda activate isce2
+         conda create -n isce2
+         conda activate isce2
 
 (Any python version 3.7 - 3.11 should work). 
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
-       echo $CONDA_PREFIX
+         echo $CONDA_PREFIX
 
 2. Install required packages
 
-       conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
-       pip install opencv-python
+         conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
+         pip install opencv-python
 
 ``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.    
        
 To compile/install mdx, you will also need        
        
-       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+         conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp poppler
+
+**NOTE**: it seems that ``openmotif`` package is not activally maintained in conda. If you experience long delays in this step, please **STOP** and just use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by 
+
+        # Ubuntu/Debian 
+        sudo apt install libxm4
+        # Redhat CentOS
+        yum install motif, motif-devel
 
 Compilers. GNU compilers coming with the system are recommended; GCC 4.8 - 13 are supported. **ONly if you don't have access to a system installed compiler,**) you may use conda gnu compilers, 
 
-       conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
+        conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
        
 To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. Note that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.  Note also that CUDA 12 has dropped support for devices < sm_50, such as K40. Please use CUDA 11 for these old devices.  
       
 3. Download the source package
 
-       mkdir -p $HOME/tools/src
-       cd $HOME/tools/src
-       git clone https://github.com/isce-framework/isce2.git
+        mkdir -p $HOME/tools/src
+        cd $HOME/tools/src
+        git clone https://github.com/isce-framework/isce2.git
 
 4. Compile and install isce2
 
        cd $HOME/tools/src/isce2
        mkdir build  && cd build
-       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages  # use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_CUDA_ARCHITECTURES=native -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} -DCMAKE_BUILD_TYPE=Release 
+       # use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
+       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages  
+       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+         -DCMAKE_CUDA_ARCHITECTURES=native \
+         -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
+         -DCMAKE_BUILD_TYPE=Release 
        make -j && make install
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
-* `DPYTHON_MODULE_DIR` is the directory to install Python scripts, defined relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.9. One method to check the site-packages directory for your Python version is to run the command
+* `DPYTHON_MODULE_DIR` (no longer needed with the symbolic link) is the directory to install Python scripts, defined relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.9. One method to check the site-packages directory for your Python version is to run the command
  
-      python3 -c 'import site; print(site.getsitepackages())'
+        python3 -c 'import site; print(site.getsitepackages())'
 
 * `DCMAKE_CUDA_ARCHITECTURES` targets optimizing the GPU code for a specific GPU architecture, or in terms of the CUDA Compute Capability, e.g.,  60 for P100, 70 for V100, 80 for A100, 90 for H100, ... If the GPU is installed on the same machine you are compiling the code, you may simply use `DCMAKE_CUDA_ARCHITECTURES=native` to auto-config. If you plan to run the code on multiple architectures, use a list such as `DCMAKE_CUDA_ARCHITECTURES="60;70;86"`, see [CMake Manual](https://cmake.org/cmake/help/latest/prop_tgt/CUDA_ARCHITECTURES.html) for more details.   
 * `DCMAKE_PREFIX_PATH` is for search path(s) of dependencies, such as gdal, fftw. Since we installed all dependencies through conda, we use ${CONDA_PREFIX}.
