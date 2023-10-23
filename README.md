@@ -1,6 +1,6 @@
 # ISCE2 installation guide
 
-This guide provides intructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine. 
+This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine. 
 **NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials.  
 
 ## Contents 
@@ -36,7 +36,7 @@ To compile/install mdx, you will also need
        
          conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp poppler
 
-**NOTE**: it seems that ``openmotif`` package is not activally maintained in conda. If you experience long delays in this step, please **STOP** and just use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by 
+**NOTE**: it seems that ``openmotif`` package is not actively maintained in conda. If you experience long delays in this step, please **STOP** and just use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by 
 
         # Ubuntu/Debian 
         sudo apt install libxm4
@@ -120,7 +120,7 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 1. Install Anaconda or Minoconda. If you only run isce2 with venv, miniconda is recommended. 
 
-2. If you prefer, prepare a conda virtual enviroment 
+2. If you prefer, prepare a conda virtual environment 
 
        conda create -n isce2 python=3.8
        conda activate isce2
@@ -151,7 +151,7 @@ If you plan to use conda installed GNU compilers (note that currently there are 
        ln -sf libzstd.so.1.3.7 libzstd.so.1
 
     
-4. Download isce2 for github or prepare your own version 
+4. Download isce2 for GitHub or prepare your own version 
      
        # create a directory to save source files
        mkdir -p ${HOME}/tools/src 
@@ -159,7 +159,7 @@ If you plan to use conda installed GNU compilers (note that currently there are 
        # glone a copy from github
        git clone https://github.com/isce-framework/isce2
 
-The command shall pull a github version of isce2 to your `${HOME}/tools/src/isce2` diectory. 
+The command shall pull a GitHub version of isce2 to your `${HOME}/tools/src/isce2` directory. 
 
 5. Configure a `SConfigISCE` file under, e.g. `${HOME}/.isce` directory
 
@@ -219,7 +219,7 @@ If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/tool
 
 Some common problems or questions:
 
-* if you use conda installed X11 motif libraries, you might see an errror `libXm.so not found` reported by scons. You may neglect and proceed; these libraries will be linked properly. But if you see error messages about gdal or fftw, please stop and check. 
+* if you use conda installed X11 motif libraries, you might see an error `libXm.so not found` reported by scons. You may neglect and proceed; these libraries will be linked properly. But if you see error messages about gdal or fftw, please stop and check. 
 
 8. Set up environment variables to load/usr isce2. 
 * use environment module, .e.g., `module load/unload isce2.mod` where an example of `isce2.mod` is provided below.   
@@ -282,7 +282,7 @@ If you need mdx (slc viewing software), install openmotif here (osx-arm64 versio
 
 Also install XQuartz. 
         
-2. Prepare a conda or conda virtual enviroment 
+2. Prepare a conda or conda virtual environment 
 
        conda create -n isce2
        conda activate isce2
@@ -356,7 +356,7 @@ Please follow the instructions for Linux. You may need to install xcode or comma
 
 Example with MacOSX 11.5.2 (Big Sur) and Apple Clang 12.0.5.
 
-1. Prepare a conda or conda virtual enviroment 
+1. Prepare a conda or conda virtual environment 
 
        conda create -n isce2
        conda activate isce2
@@ -384,7 +384,7 @@ If you already have Xcode installed,
        which clang # show /usr/bin/clang
        clang --version # Apple clang version  12.0.5 (clang-1205.0.22.11)
 
-If not, you may install the full version of Xocde, or simply the Command Line Tools, 
+If not, you may install the full version of Xcode, or simply the Command Line Tools, 
 
 
       sudo xcode-select --install
@@ -453,7 +453,7 @@ Python and other libraries, (note: some additional python packages might be need
      
 3. Install ISCE2
 
-Download ISCE2 from github
+Download ISCE2 from GitHub
 
         git clone https://github.com/isce-framework/isce2.git
 
