@@ -268,7 +268,7 @@ For `csh`,
 
 Install an osx-arm64 build of Anaconda3 or [Miniconda3](https://docs.conda.io/projects/miniconda/en/latest/index.html) (recommended). 
 
-Install Homebrew (the pkg installer is the easiest method, [Homebrew-4.1.9.pkg](https://github.com/Homebrew/brew/releases/download/4.1.9/Homebrew-4.1.9.pkg)). For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
+Install Homebrew (the pkg installer is the easiest method, download from [Homebrew Releases](https://github.com/Homebrew/brew/releases/)). For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
 
         export PATH="/opt/homebrew/bin:$PATH"
 
