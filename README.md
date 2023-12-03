@@ -6,7 +6,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 ## Contents 
 
    * [Linux with Anaconda3 : cmake (updated September 2023)](#linux-with-anaconda3--cmake)
-   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2023)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated December 2023)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
@@ -262,11 +262,18 @@ For `csh`,
 
 ## MacOSX with Anaconda3 and homebrew: Apple Silicon 
 
-(Testd on macOS Ventura 13.5.1) 
+(Testd on macOS Sonoma 14.1.2. This is the recommended method for MacOS - all packages are pre-compiled. However, after a major MacOS upgrade, e.g., from 13 to 14, a re-installation of Xcode Command Line Tools, conda, homebrew is recommended.)    
 
 1. Install Xcode (or command line tools), Conda and gcc/g++/gfortran Compiler
 
 Install an osx-arm64 build of Anaconda3 or [Miniconda3](https://docs.conda.io/projects/miniconda/en/latest/index.html) (recommended). 
+
+Taking miniconda as an example, you may follow the [Quick Command Line Install](https://docs.conda.io/projects/miniconda/en/latest/index.html#quick-command-line-install) method
+
+      mkdir -p ~/miniconda3
+      curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -o ~/miniconda3/miniconda.sh
+      bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+      rm -rf ~/miniconda3/miniconda.sh
 
 Install Homebrew (the pkg installer is the easiest method, download from [Homebrew Releases](https://github.com/Homebrew/brew/releases/)). For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
 
@@ -280,7 +287,7 @@ If you need mdx (slc viewing software), install openmotif here (osx-arm64 versio
 
         brew install openmotif
 
-Also install XQuartz. 
+Also install [XQuartz](https://www.xquartz.org/). 
         
 2. Prepare a conda or conda virtual environment 
 
