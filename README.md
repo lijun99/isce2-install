@@ -5,14 +5,15 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
 ## Contents 
 
-   * [Linux with Anaconda3 : cmake (updated September 2023)](#linux-with-anaconda3--cmake)
+   * [Linux with Anaconda3 : cmake with GPU support (updated December 2023)](#linux-with-anaconda3--cmake)
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated December 2023)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
 
 
-## Linux with Anaconda3 : cmake
+## Linux with Anaconda3 : cmake with GPU support
+
 
 1. Prepare a conda or conda virtual environment 
 
@@ -58,14 +59,21 @@ To use GPU-accelerated modules, you will need a CUDA compiler, which is usually 
 4. Compile and install isce2
 
        cd $HOME/tools/src/isce2
+       # create a build directory
        mkdir build  && cd build
        # use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
        ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages  
+       # run cmake config
        cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
          -DCMAKE_CUDA_ARCHITECTURES=native \
          -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
          -DCMAKE_BUILD_TYPE=Release 
+       # compile and install 
        make -j && make install
+
+* Some common issues
+    * ``-DCMAKE_CUDA_ARCHITECTURES=native`` the native, or auto-detect gpu architecture option requres cmake >= 3.24. If you see a message like ``nvcc fatal : Unsupported gpu architecture 'compute_'``, you are using an old version of cmake and need to change native to your targeted gpu architecture(s). See details below.  
+    * Also make sure that ``cmake`` has identified the correct python interpreter from conda. Sometimes, it uses the system installed python instead. In this case, you may guide find_python by adding `` -DPython_EXECUTABLE=`which python3` ``. 
  
 * `DCMAKE_INSTALL_PREFIX` is where the package is to be installed. Here, we choose to install to the conda venv directly ($CONDA_PREFIX) such that the paths to isce2 commands/scripts are automatically set up, like other conda packages. 
 * `DPYTHON_MODULE_DIR` (no longer needed with the symbolic link) is the directory to install Python scripts, defined relative to the `DCMAKE_INSTALL_PREFIX` directory. Please check your conda venv python3 version, and set it accordingly, e.g., python3.7 instead of python3.9. One method to check the site-packages directory for your Python version is to run the command
