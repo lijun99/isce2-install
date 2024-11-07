@@ -6,7 +6,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 ## Contents 
 
    * [Linux with Anaconda3 : cmake with GPU support (updated December 2023)](#linux-with-anaconda3--cmake)
-   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated December 2023)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated November 2024)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
@@ -270,9 +270,16 @@ For `csh`,
 
 ## MacOSX with Anaconda3 and homebrew: Apple Silicon 
 
-(Testd on macOS Sonoma 14.1.2. This is the recommended method for MacOS - all packages are pre-compiled. However, after a major MacOS upgrade, e.g., from 13 to 14, a re-installation of Xcode Command Line Tools, conda, homebrew is recommended.)    
+(Testd on macOS Sequoia 15.1. This is the recommended method for MacOS - all packages are pre-compiled. However, after a major MacOS upgrade, e.g., from 13 to 14, a re-installation of Xcode Command Line Tools, conda, homebrew is recommended.)    
 
-1. Install Xcode (or command line tools), Conda and gcc/g++/gfortran Compiler
+1. Install Command Line Tools, Conda and gcc/g++/gfortran Compiler
+
+Install Command Line Tools, (NOTE as 11/7/24: if you used Settings->Software Updates option, the CLT has a bug. Remove it and reinstall!!!) 
+
+      sudo rm -rf /Library/Developer/CommandLineTools/
+      xcode-select --install 
+
+then follow the popup window to install. 
 
 Install an osx-arm64 build of Anaconda3 or [Miniconda3](https://docs.conda.io/projects/miniconda/en/latest/index.html) (recommended). 
 
@@ -283,13 +290,21 @@ Taking miniconda as an example, you may follow the [Quick Command Line Install](
       bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
       rm -rf ~/miniconda3/miniconda.sh
 
-Install Homebrew (the pkg installer is the easiest method, download from [Homebrew Releases](https://github.com/Homebrew/brew/releases/)). For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
+Mamba is an alternative package installer to conda, which runs faster and is recommended, 
+
+       ~/miniconda3/bin/conda install mamba
+       ~/miniconda3/bin/mamba init zsh # or bash 
+       source ~/.zshrc # not needed when you open a new Terminal 
+       
+
+Install Homebrew (the pkg installer is the easiest method, download from [Homebrew Releases](https://github.com/Homebrew/brew/releases/)) -- find the most recent Homebrew-n.n.n.pkg file. For Apple Silions (osx-arm64), brew is installed to ``/opt/homebrew``. 
 
         export PATH="/opt/homebrew/bin:$PATH"
 
-and then install gfortran (current version GCC 13.2)
+and then install gfortran (current version GCC 14.2.0)
 
         brew install gfortran
+        /opt/homebrew/bin/gfortran --version # check 
 
 If you need mdx (slc viewing software), install openmotif here (osx-arm64 version currently not available from conda)
 
@@ -297,27 +312,27 @@ If you need mdx (slc viewing software), install openmotif here (osx-arm64 versio
 
 Also install [XQuartz](https://www.xquartz.org/). 
         
-2. Prepare a conda or conda virtual environment 
+2. Prepare a virtual environment with conda or mamba 
 
-       conda create -n isce2
-       conda activate isce2
+       mamba create -n isce2
+       mamba activate isce2
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
        echo $CONDA_PREFIX 
 
-Make a link to make the installation path easier (``-DPYTHON_MODULE_DIR`` not longer need)
-
-       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages
-
 3. Install required packages
 
-       conda install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
+       mamba install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
        pip install opencv-python
        
 ``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.  
                      
 4. Compile and install isce2
+
+Make a link to make the installation path easier (``-DPYTHON_MODULE_DIR`` not longer need)
+
+       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages
 
 Download ISCE2 from github
 
@@ -329,8 +344,9 @@ Compile ISCE2 with cmake,
         mkdir build && cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
           -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
-          -DCMAKE_C_COMPILER="/opt/homebrew/bin/gcc-13" \
-          -DCMAKE_CXX_COMPILER="/opt/homebrew/bin/g++-13" 
+          -DCMAKE_C_COMPILER="/opt/homebrew/bin/gcc-14" \
+          -DCMAKE_CXX_COMPILER="/opt/homebrew/bin/g++-14" \
+          -DCMAKE_Fortran_COMPILER="/opt/homebrew/bin/gfortran-14"
         make -j # to use multiple threads
         make install       
 
