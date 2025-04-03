@@ -8,7 +8,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
    * [Linux with Anaconda3 : cmake with GPU support (updated December 2023)](#linux-with-anaconda3--cmake)
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated November 2024)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
-   * [Linux with Anaconda3 : scons (not updated)](#linux-with-anaconda3--scons)
+   * [Linux with Anaconda3 : scons (updated April 2025)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
 
 
@@ -126,39 +126,43 @@ By default, the CUDA modules run on GPU device 0 (currently only one GPU per tas
 
 **Note: If you plan to use Linux provided packages instead of Conda, please follow [Ubuntu 18.04 example](Ubuntu-18.04/SConfigISCE) to create a `SConfigISCE` config file.**
 
+**Note: Tested on Miniconda with python 3.13 and GNU gcc/g++/gfortran 13.3. (April 2025). You might need these [two patches](https://github.com/isce-framework/isce2/pull/946/commits) if they haven't been merged.**
+
 1. Install Anaconda or Minoconda. If you only run isce2 with venv, miniconda is recommended. 
 
 2. If you prefer, prepare a conda virtual environment 
 
-       conda create -n isce2 python=3.8
+       conda create -n isce2 python=3.13 # or 3.8 and above
        conda activate isce2
 
 3. Install required packages
 
-       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy opencv pybind11 shapely
+       conda install -c conda-forge git scons cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely opencv
        
-To compile/install mdx, you will also need        
+To compile/install mdx, you will also need `openmotif`.        
        
-       conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp 
+       conda install -c conda-forge openmotif opencv
+
+Sometimes `opencv` and `openmotif` are not updated in time and cause conflicts with other packages. If you have issues with them, please use `pip` install method for `opencv`, 
+
+       pip install opencv-python
+
+and use the system installed openmotif 
+
+       # to check whether there is one  
+       ldconfig -p | grep libXm
+       # if not present, install as follows (need root privilege) 
+       # Ubuntu/Debian 
+       sudo apt install libxm4
+       # Redhat CentOS
+       dnf install motif, motif-devel
 
 
-You will need to make a symbolic link for cython3,
+You will need to make a symbolic link for cython3, (**this is important, otherwise, some packages will be skipped**)
       
        cd $CONDA_PREFIX/bin
        ln -sf cython cython3
-       
-If you plan to use conda installed GNU compilers (note that currently there are some compatibility issues of conda compiler with Redhat 7 systems, don't install gcc_linux-64, .... If you already made the following links, please delete them.)  
-
-       ln -sf x86_64-conda_cos6-linux-gnu-gcc gcc
-       ln -sf x86_64-conda_cos6-linux-gnu-g++ g++
-       ln -sf x86_64-conda_cos6-linux-gnu-gfortran gfortran
-       ln -sf x86_64-conda_cos6-linux-gnu-ld ld
-      
-       # for some conda-forge builds (seems no longer an issue with python3.8)
-       cd $CONDA_PREFIX/lib
-       ln -sf libzstd.so.1.3.7 libzstd.so.1
-
-    
+           
 4. Download isce2 for GitHub or prepare your own version 
      
        # create a directory to save source files
@@ -174,11 +178,12 @@ The command shall pull a GitHub version of isce2 to your `${HOME}/tools/src/isce
        PRJ_SCONS_BUILD=$HOME/build/isce_build
        PRJ_SCONS_INSTALL=$ISCE_HOME
        LIBPATH=$CONDA_PREFIX/lib
-       CPPPATH=$CONDA_PREFIX/include $CONDA_PREFIX/include/python3.8/ $CONDA_PREFIX/lib/python3.8/site-packages/numpy/core/include $CONDA_PREFIX/include/opencv4
+       CPPPATH=$CONDA_PREFIX/include $CONDA_PREFIX/include/python3.13/ $CONDA_PREFIX/lib/python3.13/site-packages/numpy/_core/include $CONDA_PREFIX/include/opencv4
        FORTRAN=gfortran
        CC=gcc
        CXX=g++
        FORTRANPATH=$CONDA_PREFIX/include
+       # note: if you use system-installed openmotif, change the settings below accordingly
        MOTIFLIBPATH=$CONDA_PREFIX/lib
        X11LIBPATH=$CONDA_PREFIX/lib
        MOTIFINCPATH=$CONDA_PREFIX/include
@@ -190,7 +195,14 @@ The command shall pull a GitHub version of isce2 to your `${HOME}/tools/src/isce
  * `PRJ_SCONS_BUILD` is a directory to save temporary compiled files
  * `PRJ_SCONS_INSTALL` is where the isce2 will be installed. We use a `$ISCE_HOME` to be defined later 
  * `LIBPATH` is where to look for the shared libraries, such as gdal, fftw
- * `CPPPATH` is where to look for C/C++ head files (#include) for libraries
+ * `CPPPATH` is where to look for C/C++ head files (#include) for libraries. Use the following commands to find the proper path(s) if you use a different python version or system, 
+
+       # Python.h location
+       python3 -c "import sysconfig; print(sysconfig.get_path('include'))"
+       # numpy include 
+       python3 -c "import numpy; print(numpy.get_include())"
+       
+   
  * `FORTRAN`, `CC`, `CXX` are the Fortran/C/C++ compilers to be used
  * `MOTIFLIBPATH` ... `X11INCPATH` are to set lib and include paths for motif and x11 libraries. 
     * for Ubuntu 18.04, set `MOTIFLIBPATH1` and `X11LIBPATH` to `/usr/lib/x86_64-linux-gnu/` and set `MOTIFINCPATH` 
@@ -199,8 +211,8 @@ and `X11INCPATH` to `/usr/include`.
 and `X11INCPATH` to `/usr/include`.
     * for conda installed packages, set them as `$CONDA_PREFIX/lib` and `$CONDA_PREFIX/include`.
  * `ENABLE_CUDA` = `True/False` whether to include some GPU/CUDA accelerated modules. If enabled, please also specify `CUDA_TOOLKIT_PATH` to where CUDA SDK is installed. Some manual configuration might be needed:
-    * CUDA SDK Versions 9 and above are recommended. 
-    * The CUDA compiler 9 & 10 by default targets NVIDIA GPUs with compute capability 3.5 (K40, K80). CUDA 11 uses sm_52 as default. If you prefer to compile CUDA code best suited to the GPU you have,  find `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, find the line `env['ENABLESHAREDNVCCFLAG'] = '-std=c++11 -shared`, add `-arch=sm_35` for K40/K80, `-arch=sm_60` for P100,  `-arch=sm_61` for GTX1080, `-arch=sm_70` for V100.  
+    * CUDA SDK Versions 11 and above are recommended. 
+    * The CUDA compiler 11 & 12 by default targets NVIDIA GPUs with compute capability 5.2 (if you use an older gpu such as 3.5 or 5.0, stay with an older version of isce2 and cuda compiler). If you prefer to compile CUDA code best suited to the GPU you have,  find `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, find the line `env['ENABLESHAREDNVCCFLAG'] = '-std=c++11 -shared`, add  `-arch=sm_60` for P100, `-arch=sm_70` for V100, or `-arch=native` to auto-select.  
  
 6. Some settings for environment variables before compile/install. You need to specify three environment variables 
 * `CONDA_PREFIX` where Anaconda3 is installed
