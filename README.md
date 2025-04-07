@@ -222,18 +222,18 @@ if they are not set. Check by, e.g.,  `echo $CONDA_PREFIX`.
 
 For `csh`, 
 
-       setenv ISCE_HOME ${HOME}/tools/isce
-       setenv SCONS_CONFIG_DIR ${HOME}/.isce
+    setenv ISCE_HOME ${HOME}/tools/isce
+    setenv SCONS_CONFIG_DIR ${HOME}/.isce
 
 and for `bash`, 
 
-       export ISCE_HOME=${HOME}/tools/isce
-       export SCONS_CONFIG_DIR=${HOME}/.isce
+    export ISCE_HOME=${HOME}/tools/isce
+    export SCONS_CONFIG_DIR=${HOME}/.isce
        
 7. Compile/install isce2
 
-       cd ${HOME}/tools/src/isce2
-       scons install
+    cd ${HOME}/tools/src/isce2
+    scons install
        
 If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/tools/isce`. 
 
@@ -276,6 +276,19 @@ For `csh`,
       export PATH=$ISCE_HOME/bin:$ISCE_HOME/applications:$PATH
       export LD_LIBRARY_PATH=$ISCE_HOME/lib:$LD_LIBRARY_PATH
       export PYTHONPATH=$ISCE_HOME:$ISCE_HOME/applications:$ISCE_HOME/components:$ISCE_HOME/library:$HOME/tools:$PYTHONPATH
+
+If your `ISCE_HOME` is other than `$HOME/tools/isce`, make sure listing its parent directory, such as `$HOME/tools`, to `PYTHONPATH`. 
+
+To load the settings, 
+
+    source isce2.rc
+
+To test whether everything is in order
+
+    python3 -c "import isce"
+    topsApp.py --help --steps
+    # if you compiled mdx
+    mdx # or mdx.py      
      
 
 9. Common questions/problems
