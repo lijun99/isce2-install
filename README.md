@@ -5,8 +5,8 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
 ## Contents 
 
-   * [Linux with Anaconda3 : cmake with GPU support (updated December 2023)](#linux-with-anaconda3--cmake)
-   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated November 2024)](#macosx-with-anaconda3-and-homebrew-apple-silicon))
+   * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake)
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated November 2024)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [Linux with Anaconda3 : scons (updated April 2025)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
@@ -14,13 +14,14 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
 ## Linux with Anaconda3 : cmake with GPU support
 
+(Tested on Ubuntu 24.04 with GNU GCC/GFORTRAN 13.3.0 and CUDA 13, September 2025)
 
 1. Prepare a conda or conda virtual environment 
 
          conda create -n isce2
          conda activate isce2
 
-(Any python version 3.7 - 3.11 should work). 
+(Any python version 3.7 - 3.13 should work). 
 
 The following steps will install isce2 to $CONDA_PREFIX. 
 
@@ -28,28 +29,37 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 2. Install required packages
 
-         conda install -c conda-forge git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
-         pip install opencv-python
+         conda install -c conda-forge git cmake cython gdal h5py \
+             libgdal pytest numpy fftw scipy pybind11 shapely    \
+             opencv openmotif-dev
 
-``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.    
-       
-To compile/install mdx, you will also need        
-       
-         conda install -c conda-forge openmotif openmotif-dev xorg-libx11 xorg-libxt xorg-libxmu xorg-libxft libiconv xorg-libxrender xorg-libxau xorg-libxdmcp poppler
+``opencv`` and ``openmotif`` packages have been updated in conda-forge. If you have issues with these packages, or use an old version of conda and experience long wait time for the compatibility check, please 
 
-**NOTE**: it seems that ``openmotif`` package is not actively maintained in conda. If you experience long delays in this step, please **STOP** and just use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by 
+Use ``pip``.to install ``opencv``
+
+        pip install opencv-python
+       
+Use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by 
 
         # Ubuntu/Debian 
         sudo apt install libxm4
         # Redhat CentOS
         yum install motif, motif-devel
 
-Compilers. GNU compilers coming with the system are recommended; GCC 4.8 - 13 are supported. **ONly if you don't have access to a system installed compiler,**) you may use conda gnu compilers, 
+**Compilers**. GNU compilers coming with the system are recommended; GCC 4.8 - 13 are supported. **Only if you don't have access to a system installed compiler**, you may use conda gnu compilers, 
 
         conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
        
-To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. Note that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.  Note also that CUDA 12 has dropped support for devices < sm_50, such as K40. Please use CUDA 11 for these old devices.  
-      
+**CUDA Compilers**. To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. CUDA compilers now can be [installed by conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#conda-installation) as well, 
+
+        conda install cuda -c nvidia
+
+**Note** that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.  
+
+**Note** CUDA 13.0 now requies C++17 support. If you have issues with pycuampcor with CUDA 13.0, apply [these patches](https://github.com/isce-framework/isce2/compare/main...lijun99:isce2:cuda-13) if they are not merged.  
+
+**Note** CUDA 13 has dropped support for devices < sm_75 (P100, V100, etc). CUDA 12 has dropped support for devices < sm_50 (K40 etc). Please use an approriate CUDA version for you device(s). 
+    
 3. Download the source package
 
         mkdir -p $HOME/tools/src
