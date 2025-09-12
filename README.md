@@ -225,7 +225,7 @@ and `X11INCPATH` to `/usr/include`.
     * CUDA SDK Versions 11 and above are recommended.
     * The CUDA compiler 11 & 12 by default targets NVIDIA GPUs with compute capability 5.2 (if you use an older gpu such as 3.5 or 5.0, stay with an older version of isce2 and cuda compiler). If you prefer to compile CUDA code best suited to the GPU you have,  find `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, find the line `env['ENABLESHAREDNVCCFLAG'] = '-std=c++11 -shared`, add  `-arch=sm_60`
     for P100, `-arch=sm_70` for V100, or `-arch=native` to auto-select.
-    * CUDA 13 requires c++17 support. If you see such complains when compiling pycuampcor, modify `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, change `-std=c++11` to `-std=c++17`.
+    * CUDA 13 requires c++17 support. If you see such complains when compiling pycuampcor, modify `env['ENABLESHAREDNVCCFLAG']` in `${HOME}/tools/src/isce2/scons_tools/cuda.py` file, change `-std=c++11` to `-std=c++17`. Also, apply [these patches](https://github.com/isce-framework/isce2/compare/main...lijun99:isce2:cuda-13) to isce2 if they have not been merged.
 
 6. Some settings for environment variables before compile/install. You need to specify three environment variables
 * `CONDA_PREFIX` where Anaconda3 is installed
