@@ -7,7 +7,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
    * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake)
    * [Linux with Anaconda3 : scons (updated September 2025)](#linux-with-anaconda3--scons)
-   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated November 2024)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
+   * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2025)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
 
@@ -308,13 +308,15 @@ To test whether everything is in order
 
 ## MacOSX with Anaconda3 and homebrew: Apple Silicon
 
-(Testd on macOS Sequoia 15.1. This is the recommended method for MacOS - all packages are pre-compiled. However, after a major MacOS upgrade, e.g., from 13 to 14, a re-installation of Xcode Command Line Tools, conda, homebrew is recommended.)
+(Testd on macOS Tahoe 26.0. This is the recommended method for MacOS - all packages are pre-compiled. However, after a major MacOS upgrade, e.g., from 15 to 26, a re-installation of Xcode Command Line Tools, conda, homebrew is needed. A minor upgrade is usually ok.)
 
-1. Install Command Line Tools, Conda and gcc/g++/gfortran Compiler
+1. Install Command Line Tools (or a full Xcode), Conda and gcc/g++/gfortran Compiler
 
-Install Command Line Tools, (NOTE as 11/7/24: if you used Settings->Software Updates option, the CLT has a bug. Remove it and reinstall!!!)
+Install Command Line Tools,
 
+      # remove the old installation ONLY IF NEEDED
       sudo rm -rf /Library/Developer/CommandLineTools/
+      # install Command Line Tools 
       xcode-select --install
 
 then follow the popup window to install.
@@ -339,10 +341,10 @@ Install Homebrew (the pkg installer is the easiest method, download from [Homebr
 
         export PATH="/opt/homebrew/bin:$PATH"
 
-and then install gfortran (current version GCC 14.2.0)
+and then install gcc/gfortran (GCC 14 is recommended. GCC 15 has more strict rules on syntax and lots of the code needs to be updated.)
 
-        brew install gfortran
-        /opt/homebrew/bin/gfortran --version # check
+        brew install gcc@14
+        /opt/homebrew/bin/gfortran-14 --version # check
 
 If you need mdx (slc viewing software), install openmotif here (osx-arm64 version currently not available from conda)
 
@@ -361,10 +363,7 @@ The following steps will install isce2 to $CONDA_PREFIX.
 
 3. Install required packages
 
-       mamba install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely
-       pip install opencv-python
-
-``opencv`` has complex dependencies, which causes long delay to the conda compatibility check. We recommend installing it with ``pip``.
+       mamba install git cmake cython gdal h5py libgdal pytest numpy fftw scipy pybind11 shapely opencv
 
 4. Compile and install isce2
 
@@ -411,7 +410,7 @@ You may try the following to check whether ISCE2 has been properly installed,
 To use mdx, you will need [XQuartz](https://www.xquartz.org/).
 
         mdx.py xxxxx.slc
-        # show the slc picture (.xml description file needed)
+        # show the slc image (.xml description file needed)
 
 Enjoy!
 
