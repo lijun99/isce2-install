@@ -599,7 +599,7 @@ echo $ISCE_HOME
 cp -R $HOME/tools/src/isce2/contrib/stack $ISCE_HOME
 # set the environmental variables and paths 
 export ISCE_STACK=$ISCE_HOME/stack
-export export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}
+export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}
 ```
 
 When you use one of the stack processors, use the following scripts to load 
@@ -621,8 +621,7 @@ export PATH=${PATH}:${ISCE_STACK}/stripmapStack
 export PATH=${PATH}:${ISCE_STACK}/alosStack
 ```
 
-please note that different stack processors may share the submodules with the same name, as explained by [the stack processor guide](https://github.com/isce-framework/isce2/tree/main/contrib/stack#important-note), you can load one at a time, which means if you are using one stack processor but want to switch to another, you need to switch to a new shell/terminal.  
-
+please note that different stack processors may share the submodules with the same name, as explained by [the stack processor guide](https://github.com/isce-framework/isce2/tree/main/contrib/stack#important-note), you can load one stack processor at a time, which means if you are using one stack processor but want to switch to another, you need to switch to a new shell/terminal.  
 
 
 ## Problems & Questions
