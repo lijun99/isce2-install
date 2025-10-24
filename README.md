@@ -10,6 +10,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2025)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
+   * [Install Stack Processors](#install-stack-processors).
 
 
 ## Linux with Anaconda3 : cmake with GPU support
@@ -565,7 +566,68 @@ To use mdx, you will need XQuartz.
 
 (If you have a "cannot open DISPLAY" error, check [here](https://github.com/XQuartz/XQuartz/issues/295#issuecomment-1326693810). )
 
-Problems & Questions, please post on the Issue.
+
+## Install Stack processors 
+
+If you plan to use the stack processors in `contrib/stack` from the source directory, you may leave them there, 
+
+```bash
+# set ISCE_STACK to the dev version
+export ISCE_STACK=${HOME}/tools/src/isce2/contrib/stack                        
+# import tops/stripmapStack as python modules
+export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}                                   
+```
+
+or copy them over to your installation directory. If you installed isce2 to `$CONDA_PREFIX`, follow the [isce2 conda-forge method](https://github.com/conda-forge/isce2-feedstock/blob/c5c493f816123ef1af86f8e4198286224b03e8a1/recipe/build.sh#L70), 
+
+```bash
+# create the installation directory in $CONDA_PREFIX/share
+mkdir -p $CONDA_PREFIX/share/isce2                     
+# copy stack processor files over 
+cp -R $HOME/tools/src/isce2/contrib/stack/* $CONDA_PREFIX/share/isce2
+# set the environmental variables and paths 
+export ISCE_STACK=$CONDA_PREFIX/share/isce2
+export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}
+```
+
+If you installed isce2 to a custom directory, `$ISCE_HOME`, with either `cmake` or `scons`, 
+
+```bash
+# verify the installation directory
+echo $ISCE_HOME
+# copy the stack processors over 
+cp -R $HOME/tools/src/isce2/contrib/stack $ISCE_HOME
+# set the environmental variables and paths 
+export ISCE_STACK=$ISCE_HOME/stack
+export export PYTHONPATH=${PYTHONPATH}:${ISCE_STACK}
+```
+
+When you use one of the stack processors, use the following scripts to load 
++ For Sentinel-1 TOPS data
+
+```bash
+export PATH=${PATH}:${ISCE_STACK}/topsStack
+```
+
++ For StripMap data
+
+```bash
+export PATH=${PATH}:${ISCE_STACK}/stripmapStack
+```
+
++ For ALOS-2 data
+
+```bash
+export PATH=${PATH}:${ISCE_STACK}/alosStack
+```
+
+please note that different stack processors may share the submodules with the same name, as explained by [the stack processor guide](https://github.com/isce-framework/isce2/tree/main/contrib/stack#important-note), you can load one at a time, which means if you are using one stack processor but want to switch to another, you need to switch to a new shell/terminal.  
+
+
+
+## Problems & Questions
+
+Please post on the Issue.
 
 
 
