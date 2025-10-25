@@ -246,8 +246,10 @@ and for `bash`,
 
 7. Compile/install isce2
 
-    cd ${HOME}/tools/src/isce2
-    scons install
+```bash
+cd ${HOME}/tools/src/isce2
+scons install
+```
 
 If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/tools/isce`.
 
