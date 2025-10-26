@@ -490,6 +490,28 @@ You may notice warnings such as  ``was built for newer macOS version (11.5) than
 ## MacOSX with Macports : Apple Silicon with mdx
 (Tested on macOS Ventura 13.5.1)
 
+(Notes on macOS Tahoe 26.0.1 
+The following steps still work. However, 
+
+(a) the default gcc compiler is `gcc13`,
+
+```bash
+sudo port select --set gcc mp-gcc13
+```
+
+(b) `gcc13` no longer requires extra `-fopenmp=lomp` flag, and therefore remove the `DOpenMP` options from `cmake`,
+
+```bash
+cmake .. -DCMAKE_INSTALL_PREFIX=/opt/local \
+         -DCMAKE_C_COMPILER=/opt/local/bin/gcc \
+         -DCMAKE_CXX_COMPILER=/opt/local/bin/g++ \
+         -DCMAKE_PREFIX_PATH="/opt/local" \
+         -DPython_ROOT_DIR="/opt/local/Library/Frameworks/Python.framework/Versions/3.11/"
+```
+
+(c) You might see warnings like `clang: warning: overriding deployment version from '16.0' to '26.0' [-Woverriding-deployment-version]`. Just neglect them. )
+
+
 1. Install Xcode (or Command Line Tools) and Macports
 
 Follow the [Macports Guide](https://www.macports.org/install.php) to download and install Macports. All the files, by default, will be installed to ``/opt/local``. The PATH will also be automatically added to your ``.zprofile`` or ``.profile``. If not, please run
