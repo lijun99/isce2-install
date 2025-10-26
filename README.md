@@ -6,7 +6,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 ## Contents
 
    * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake)
-   * [Linux with Anaconda3 : scons (updated September 2025)](#linux-with-anaconda3--scons)
+   * [Linux with Anaconda3 : scons with GPU support (updated September 2025)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2025)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
@@ -187,22 +187,33 @@ The command shall pull a GitHub version of isce2 to your `${HOME}/tools/src/isce
 
 5. Configure a `SConfigISCE` file under, e.g. `${HOME}/.isce` directory
 
-       PRJ_SCONS_BUILD=$HOME/build/isce_build
-       PRJ_SCONS_INSTALL=$ISCE_HOME
-       LIBPATH=$CONDA_PREFIX/lib
-       CPPPATH=$CONDA_PREFIX/include $CONDA_PREFIX/include/python3.13/ $CONDA_PREFIX/lib/python3.13/site-packages/numpy/_core/include $CONDA_PREFIX/include/opencv4
-       FORTRAN=gfortran
-       CC=gcc
-       CXX=g++
-       FORTRANPATH=$CONDA_PREFIX/include
-       # note: if you use system-installed openmotif, change the settings below accordingly
-       MOTIFLIBPATH=$CONDA_PREFIX/lib
-       X11LIBPATH=$CONDA_PREFIX/lib
-       MOTIFINCPATH=$CONDA_PREFIX/include
-       X11INCPATH=$CONDA_PREFIX/include
-       RPATH=$CONDA_PREFIX/lib
-       ENABLE_CUDA = True
-       CUDA_TOOLKIT_PATH=/usr/local/cuda  # use 'which nvcc' to verify
+```
+# SConfigISCE file
+# directory to keep temporary compile files
+PRJ_SCONS_BUILD=$HOME/build/isce_build
+# directory to install isce2 to, as $ISCE_HOME, the last directory NEEDS to be named isce 
+PRJ_SCONS_INSTALL=$HOME/apps/isce
+# lib path for gdal, fftw, ... 
+LIBPATH=/usr/local/cuda/lib64 $CONDA_PREFIX/lib
+# include path 
+CPPPATH=/usr/local/cuda/include $CONDA_PREFIX/include $CONDA_PREFIX/include/python3.13/ $CONDA_PREFIX/lib/python3.13/site-packages/numpy/_core/include $CONDA_PREFIX/include/opencv4
+# compilers 
+FORTRAN=gfortran
+CC=gcc
+CXX=g++
+# path to find fftw fortran module
+FORTRANPATH=$CONDA_PREFIX/include
+# note: if you use system-installed openmotif, change the settings below accordingly
+MOTIFLIBPATH=$CONDA_PREFIX/lib
+X11LIBPATH=$CONDA_PREFIX/lib
+MOTIFINCPATH=$CONDA_PREFIX/include
+X11INCPATH=$CONDA_PREFIX/include
+# lib path for python modules
+RPATH=/usr/local/cuda/lib64 $CONDA_PREFIX/lib
+# enable cuda modules
+ENABLE_CUDA = True
+CUDA_TOOLKIT_PATH=/usr/local/cuda  # use 'which nvcc' to verify
+```
 
  * `PRJ_SCONS_BUILD` is a directory to save temporary compiled files
  * `PRJ_SCONS_INSTALL` is where the isce2 will be installed. We use a `$ISCE_HOME` to be defined later
@@ -234,15 +245,10 @@ and `X11INCPATH` to `/usr/include`.
 * `SCONS_CONFIG_DIR` where the `SConfigISCE` is located.
 if they are not set. Check by, e.g.,  `echo $CONDA_PREFIX`.
 
-For `csh`,
-
-    setenv ISCE_HOME ${HOME}/tools/isce
-    setenv SCONS_CONFIG_DIR ${HOME}/.isce
-
-and for `bash`,
-
-    export ISCE_HOME=${HOME}/tools/isce
-    export SCONS_CONFIG_DIR=${HOME}/.isce
+```bash
+export ISCE_HOME=${HOME}/apps/isce
+export SCONS_CONFIG_DIR=${HOME}/.isce
+```
 
 7. Compile/install isce2
 
@@ -251,7 +257,7 @@ cd ${HOME}/tools/src/isce2
 scons install
 ```
 
-If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/tools/isce`.
+If successful, you should obtain a compiled isce2 at `$ISCE_HOME` or `$HOME/apps/isce`.
 
 Some common problems or questions:
 
@@ -262,38 +268,28 @@ Some common problems or questions:
 
       #%Module
       module-whatis {Description: ISCE2-github}
-      set root $HOME/tools/isce
+      set root $HOME/apps/isce
       prepend-path	LD_LIBRARY_PATH	$root/lib
       prepend-path	LIBRARY_PATH	$root/lib
       prepend-path	PATH		$root/bin:$root/applications
-      prepend-path	PYTHONPATH	$HOME/tools:$root:$root/applications:$root/components:$root/library
+      prepend-path	PYTHONPATH	$HOME/apps:$root:$root/applications:$root/components:$root/library
       setenv 		ISCE_HOME       $root
 
-Note that in order to `import isce` from python, you need to use the `isce` as the installation directory name and also set the directory where `isce` is located (in above case, `$HOME/tools`) to `PYTHONPATH`.
+Note that in order to `import isce` from python, you need to use the `isce` as the installation directory name and also set the directory where `isce` is located (in above case, `$HOME/apps`) to `PYTHONPATH`.
 
 * use a resource file to load as `source isce2.rc`.
-For `csh`,
 
-      # isce2.cshrc
-      setenv ISCE_HOME $HOME/tools/isce
-      setenv PATH $ISCE_HOME/bin\:$ISCE_HOME/applications\:$PATH
-      setenv LD_LIBRARY_PATH $ISCE_HOME/lib\:$LD_LIBRARY_PATH
-      # check whether PYTHONPATH exists
-      if ( ! $?PYTHONPATH ) then
-        setenv PYTHONPATH $HOME\:$ISCE_HOME\:$ISCE_HOME/applications\:$ISCE_HOME/components\:$ISCE_HOME/library
-      else
-        setenv PYTHONPATH $HOME\:$ISCE_HOME\:$ISCE_HOME/applications\:$ISCE_HOME/components\:$ISCE_HOME/library\:$PYTHONPATH
-      endif
+  
+```bash
+# isce2.rc
+export ISCE_INSTALL_ROOT=$HOME/apps
+export ISCE_HOME=$ISCE_INSTALL_ROOT/isce
+export PATH=$ISCE_HOME/bin:$ISCE_HOME/applications:$PATH
+export LD_LIBRARY_PATH=$ISCE_HOME/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$ISCE_HOME:$ISCE_HOME/applications:$ISCE_HOME/components:$ISCE_HOME/library:$ISCE_INSTALL_ROOT:$PYTHONPATH
+```
 
- For `bash`,
-
-      # isce2.rc
-      export ISCE_HOME=$HOME/tools/isce
-      export PATH=$ISCE_HOME/bin:$ISCE_HOME/applications:$PATH
-      export LD_LIBRARY_PATH=$ISCE_HOME/lib:$LD_LIBRARY_PATH
-      export PYTHONPATH=$ISCE_HOME:$ISCE_HOME/applications:$ISCE_HOME/components:$ISCE_HOME/library:$HOME/tools:$PYTHONPATH
-
-If your `ISCE_HOME` is other than `$HOME/tools/isce`, make sure listing its parent directory, such as `$HOME/tools`, to `PYTHONPATH`.
+If your `ISCE_HOME` is other than `$HOME/apps/isce`, make sure listing its parent directory, such as `$HOME/tools`, to `PYTHONPATH`.
 
 To load the settings,
 
