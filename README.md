@@ -1,7 +1,7 @@
 # ISCE2 installation guide
 
 This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine.
-**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials. For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the respective methods below.  
+**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials. For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the custom build methods below.  
 
 ## Contents
 
@@ -15,7 +15,7 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
 ## Install from conda-forge 
 
-Currently, `isce2` package is available from `conda-forge`, supporting `linux-64` (for most linux machines and windows with wsl) and `osx-64` (Intel Mac) platforms, python versions from 3.9 to 3.12. It does not have cuda modules. It is NOT available for `osx-arm64` (Apple Silicons) - probably due to the missing openmotif package. For those users, please use the homebrew or macports methods below. (A `osx-64 anaconda with Rosetta2 might work - to be tested.) 
+Currently, `isce2` package is available from `conda-forge`, supporting `linux-64` (for most linux machines and windows with wsl) and `osx-64` (Intel Mac) platforms, python versions from 3.9 to 3.12. It does not have cuda modules. It is NOT available for `osx-arm64` (Apple Silicons) - probably due to the missing openmotif package. For those users, please use the homebrew or macports methods below. (A `osx-64` anaconda with Rosetta2 might work - to be tested.) 
 
 You may create a new virtual environment 
 
@@ -57,7 +57,7 @@ export PYTHONPATH=$ISCE_HOME:$ISCE_HOME/applications:$ISCE_HOME/components:$ISCE
 
 and try some commands, e.g.,
 
-``bash
+```bash
 topsApp.py --help --steps
 mdx.py
 ```
