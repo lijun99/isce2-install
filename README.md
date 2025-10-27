@@ -1,16 +1,68 @@
 # ISCE2 installation guide
 
 This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine.
-**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials.
+**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials. For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the respective methods below.  
 
 ## Contents
 
+   * [Install from conda-forge](#install-from-conda-forge)
    * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake)
    * [Linux with Anaconda3 : scons with GPU support (updated September 2025)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2025)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
-   * [Install Stack Processors](#install-stack-processors).
+   * [Install Stack Processors](#install-stack-processors)
+
+## Install from conda-forge 
+
+Currently, `isce2` package is available from `conda-forge`, supporting `linux-64` (for most linux machines and windows with wsl) and `osx-64` (Intel Mac) platforms, python versions from 3.9 to 3.12. It does not have cuda modules. It is NOT available for `osx-arm64` (Apple Silicons) - probably due to the missing openmotif package. For those users, please use the homebrew or macports methods below. (A `osx-64 anaconda with Rosetta2 might work - to be tested.) 
+
+You may create a new virtual environment 
+
+```bash
+conda create -n isce2 python=3.12
+conda activate isce2
+```
+
+or use your existing python virtual environment, if your python version is not 3.9 to 3.12, you may try to change it 
+
+```bash
+conda install python=3.12
+```
+
+Install `isce2` 
+
+```bash
+conda install -c conda-forge isce2
+```
+
+and test it 
+
+```bash
+python3 -c "import isce"
+```
+
+If successful, it returns something like `Using default ISCE Path: /opt/conda/envs/isce2/lib/python3.12/site-packages/isce`, or equivalent to `$CONDA_PREFIX/lib/python3.12/site-packages/isce`. We will set this path as `ISCE_HOME`. 
+
+For easier access to isce2 apps and stack processors, you may create a `isce2.rc` somewhere or simply insert them to your `.bashrc` or `.zshrc`. 
+
+```
+# isce2.rc for conda-forge installation
+export ISCE_HOME=$CONDA_PREFIX/lib/python3.12/site-packages/isce
+export ISCE_STACK=$CONDA_PREFIX/share/isce2
+export PATH=$ISCE_HOME/bin:$ISCE_HOME/applications:$PATH
+export LD_LIBRARY_PATH=$ISCE_HOME/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$ISCE_HOME:$ISCE_HOME/applications:$ISCE_HOME/components:$ISCE_HOME/library:$ISCE_STACK:$PYTHONPATH
+```
+
+and try some commands, e.g.,
+
+``bash
+topsApp.py --help --steps
+mdx.py
+```
+
+If they run without issues, you have a working `isce2`.
 
 
 ## Linux with Anaconda3 : cmake with GPU support
