@@ -1,12 +1,15 @@
 # ISCE2 installation guide
 
 This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a Linux/MacOS machine.
-**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials. For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the custom build methods below.  
+
+**NOTE**: this is not the **official** installation guide. It only serves to help users to install ISCE2 on some common and most recent platforms. Please check the [ISCE2](https://github.com/isce-framework/isce2) page for official guides and tutorials. 
+
+For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the custom build methods below.  
 
 ## Contents
 
    * [Install from conda-forge](#install-from-conda-forge)
-   * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake)
+   * [Linux with Anaconda3 : cmake with GPU support (updated September 2025)](#linux-with-anaconda3--cmake-with-gpu-support)
    * [Linux with Anaconda3 : scons with GPU support (updated September 2025)](#linux-with-anaconda3--scons)
    * [MacOSX with Anaconda3 and homebrew: Apple Silicon (updated September 2025)](#macosx-with-anaconda3-and-homebrew-apple-silicon)
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
@@ -71,41 +74,55 @@ If they run without issues, you have a working `isce2`.
 
 1. Prepare a conda or conda virtual environment
 
-         conda create -n isce2
-         conda activate isce2
+```bash
+conda create -n isce2
+conda activate isce2
+```
 
 (Any python version 3.7 - 3.13 should work).
 
 The following steps will install isce2 to $CONDA_PREFIX.
 
-         echo $CONDA_PREFIX
+```bash
+echo $CONDA_PREFIX
+```
 
 2. Install required packages
 
-         conda install -c conda-forge git cmake cython gdal h5py \
-             libgdal pytest numpy fftw scipy pybind11 shapely    \
-             opencv openmotif-dev
+```bash
+conda install -c conda-forge git cmake cython gdal h5py \
+    libgdal pytest numpy fftw scipy pybind11 shapely    \
+    opencv openmotif-dev
+```
 
 ``opencv`` and ``openmotif`` packages have been updated in conda-forge. If you have issues with these packages, or use an old version of conda and experience long wait time for the compatibility check, please
 
 Use ``pip``.to install ``opencv``
 
-        pip install opencv-python
+```bash
+pip install opencv-python
+```
 
 Use linux system installed openmotif. You may use the command ``ldconfig -p | grep libXm`` to check whether it exists. If not, install openmotif by
 
-        # Ubuntu/Debian
-        sudo apt install libxm4
-        # Redhat CentOS
-        yum install motif, motif-devel
+```bash
+# Ubuntu/Debian
+sudo apt install libxm4
+# Redhat CentOS
+yum install motif, motif-devel
+```
 
 **Compilers**. GNU compilers coming with the system are recommended; GCC 4.8 - 13 are supported. **Only if you don't have access to a system installed compiler**, you may use conda gnu compilers,
 
-        conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
+```bash
+conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
+```
 
 **CUDA Compilers**. To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. CUDA compilers now can be [installed by conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#conda-installation) as well,
 
-        conda install cuda -c nvidia
+```bash
+conda install cuda -c nvidia
+```
 
 **Note** that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.
 
@@ -116,24 +133,28 @@ Use linux system installed openmotif. You may use the command ``ldconfig -p | gr
 
 3. Download the source package
 
-        mkdir -p $HOME/tools/src
-        cd $HOME/tools/src
-        git clone https://github.com/isce-framework/isce2.git
+```bash
+mkdir -p $HOME/tools/src
+cd $HOME/tools/src
+git clone https://github.com/isce-framework/isce2.git
+```
 
 4. Compile and install isce2
 
-       cd $HOME/tools/src/isce2
-       # create a build directory
-       mkdir build  && cd build
-       # use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
-       ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages
-       # run cmake config
-       cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
-         -DCMAKE_CUDA_ARCHITECTURES=native \
-         -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
-         -DCMAKE_BUILD_TYPE=Release
-       # compile and install
-       make -j && make install
+```bash
+cd $HOME/tools/src/isce2
+# create a build directory
+mkdir build  && cd build
+# use a symbolic link instead of specify -DPYTHON_MODULE_DIR=lib/python3.xx/site-packages
+ln -sf `python3 -c 'import site; print(site.getsitepackages()[0])'` $CONDA_PREFIX/packages
+# run cmake config
+cmake .. -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+  -DCMAKE_CUDA_ARCHITECTURES=native \
+  -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} \
+  -DCMAKE_BUILD_TYPE=Release
+# compile and install
+make -j && make install
+```
 
 * Some common issues
     * ``-DCMAKE_CUDA_ARCHITECTURES=native`` the native, or auto-detect gpu architecture option requres cmake >= 3.24. If you see a message like ``nvcc fatal : Unsupported gpu architecture 'compute_'``, you are using an old version of cmake and need to change native to your targeted gpu architecture(s). See details below.
