@@ -6,6 +6,12 @@ This guide provides instructions to install ISCE2 with Anaconda/Miniconda on a L
 
 For most users, please install from conda-forge (easiest method). Only if you need CUDA support or need native Apple Silicon (`osx-arm64`) support, you may follow the custom build methods below.  
 
+**NOTE to custom builders**(April 2026): To ensure a stable build, we recommend sticking to proven environments. Unless you are an experienced developer and know how to patch, please avoid the latest bleeding-edge versions of Python or compilers.
+  - Python 3.9 to 3.13 (3.14 and above are not fully tested)
+  - numpy <=1.26.4 (avoid 2.x which may have some runtime issues)
+  - CUDA 11-12 (e.g., cuda-12.9, avoid cuda 13)
+  - GNU compiler gcc/g++/gfortran <=14, (e.g. gcc-13, avoid gcc-15)
+
 ## Contents
 
    * [Install from conda-forge](#install-from-conda-forge)
@@ -75,11 +81,11 @@ If they run without issues, you have a working `isce2`.
 1. Prepare a conda or conda virtual environment
 
 ```bash
-conda create -n isce2
+conda create -n isce2 python=3.12
 conda activate isce2
 ```
 
-(Any python version 3.7 - 3.13 should work).
+(Any python version 3.7 - 3.12 should work).
 
 The following steps will install isce2 to $CONDA_PREFIX.
 
@@ -121,7 +127,7 @@ conda install gcc_linux-64 gxx_linux-64 gfortran_linux-64
 **CUDA Compilers**. To use GPU-accelerated modules, you will need a CUDA compiler, which is usually located at `/usr/local/cuda` or can be loaded by `module load cuda`. CUDA compilers now can be [installed by conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#conda-installation) as well,
 
 ```bash
-conda install cuda -c nvidia
+conda install cuda=12.9 -c nvidia
 ```
 
 **Note** that CUDA compiler (``nvcc``) may have restrictions on host compilers, see [CUDA Documentaion](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#host-compiler-support-policy) for more details.
