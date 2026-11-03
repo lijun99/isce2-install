@@ -21,6 +21,7 @@ For most users, please install from conda-forge (easiest method). Only if you ne
    * [MacOSX with Macports : Apple Silicon with mdx (updated Sepetember 2023)](#macosx-with-macports--apple-silicon-with-mdx)
    * [MacOSX with Anaconda3 : Intel (not updated)](#macosx-with-anaconda3--intel)
    * [Install Stack Processors](#install-stack-processors)
+   * [Install with Claude Code (install-isce2 skill)](#install-with-claude-code-install-isce2-skill)
 
 ## Install from conda-forge 
 
@@ -721,6 +722,45 @@ export PATH=${PATH}:${ISCE_STACK}/alosStack
 ```
 
 please note that different stack processors may share the submodules with the same name, as explained by [the stack processor guide](https://github.com/isce-framework/isce2/tree/main/contrib/stack#important-note), you can load one stack processor at a time, which means if you are using one stack processor but want to switch to another, you need to switch to a new shell/terminal.  
+
+
+## Install with Claude Code (install-isce2 skill)
+
+This repo includes a [Claude Code](https://claude.com/claude-code) skill, [install-isce2](.claude/skills/install-isce2/SKILL.md), that follows the instructions in this guide. It checks your machine (OS/arch, conda, compilers, CUDA/GPU, openmotif, any existing isce2), picks an installation method, runs the steps, and verifies the result. It asks for confirmation before any `sudo`, `apt`/`brew`/`port` install, or edit to your shell rc files.
+
+1. Get the skill. Either run Claude Code from this repo,
+
+```bash
+git clone https://github.com/lijun99/isce2-install.git
+cd isce2-install
+claude
+```
+
+or copy it to your user skills directory so it is available from any directory,
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R isce2-install/.claude/skills/install-isce2 ~/.claude/skills/
+```
+
+2. Ask Claude to install isce2, either in plain words, e.g., "install isce2 with CUDA support into a new conda env", or with the slash command
+
+```
+/install-isce2
+/install-isce2 cmake --cuda --env isce2
+/install-isce2 conda-forge
+```
+
+Options are a method (`conda-forge`, `cmake`, `scons`, `homebrew`, `macports`), `--cuda`, and `--env NAME`. They are all optional; without them, Claude uses conda-forge unless you need CUDA or are on Apple Silicon.
+
+3. The skill comes with two scripts that you may also run on your own (from this repo, or from `~/.claude/skills/install-isce2/scripts/` if you copied the skill),
+
+```bash
+# report what is installed on this machine (changes nothing)
+bash .claude/skills/install-isce2/scripts/detect_env.sh
+# check an isce2 installation (run in the env/shell that loads isce2)
+bash .claude/skills/install-isce2/scripts/verify_install.sh
+```
 
 
 ## Problems & Questions
